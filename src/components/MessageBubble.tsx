@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { isTextUIPart, type UIMessage } from 'ai';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { Components } from 'react-markdown';
-import type { Message } from '@/lib/types';
 
 const markdownComponents: Components = {
   p: ({ children }) => <p className="mb-3 last:mb-0 leading-relaxed">{children}</p>,
@@ -16,9 +16,7 @@ const markdownComponents: Components = {
   code: ({ children, className }) => {
     const isBlock = Boolean(className?.startsWith('language-'));
     if (isBlock) {
-      return (
-        <code className={`${className ?? ''} text-emerald-300 font-mono`}>{children}</code>
-      );
+      return <code className={`${className ?? ''} text-emerald-300 font-mono`}>{children}</code>;
     }
     return (
       <code className="bg-zinc-800 text-emerald-300 px-1.5 py-0.5 rounded text-xs font-mono">
@@ -34,9 +32,15 @@ const markdownComponents: Components = {
       {children}
     </blockquote>
   ),
-  h1: ({ children }) => <h1 className="text-lg font-semibold mb-2 mt-4 first:mt-0">{children}</h1>,
-  h2: ({ children }) => <h2 className="text-base font-semibold mb-2 mt-4 first:mt-0">{children}</h2>,
-  h3: ({ children }) => <h3 className="text-sm font-semibold mb-1 mt-3 first:mt-0">{children}</h3>,
+  h1: ({ children }) => (
+    <h1 className="text-lg font-semibold mb-2 mt-4 first:mt-0">{children}</h1>
+  ),
+  h2: ({ children }) => (
+    <h2 className="text-base font-semibold mb-2 mt-4 first:mt-0">{children}</h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="text-sm font-semibold mb-1 mt-3 first:mt-0">{children}</h3>
+  ),
   a: ({ children, href }) => (
     <a
       href={href}
@@ -58,17 +62,18 @@ const markdownComponents: Components = {
       {children}
     </th>
   ),
-  td: ({ children }) => (
-    <td className="border border-zinc-700 px-3 py-2">{children}</td>
-  ),
+  td: ({ children }) => <td className="border border-zinc-700 px-3 py-2">{children}</td>,
 };
 
 interface MessageBubbleProps {
-  message: Message;
+  message: UIMessage;
 }
 
 export default function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.role === 'user';
+
+  // Extract all text parts from the UIMessage
+  const textContent = message.parts.filter(isTextUIPart).map((p) => p.text).join('');
 
   return (
     <motion.div
@@ -79,15 +84,12 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     >
       {isUser ? (
         <div className="max-w-[75%] px-4 py-3 rounded-2xl rounded-tr-md bg-zinc-800 text-zinc-100 text-sm leading-relaxed whitespace-pre-wrap">
-          {message.content}
+          {textContent}
         </div>
       ) : (
         <div className="max-w-[85%] text-zinc-200 text-sm">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={markdownComponents}
-          >
-            {message.content}
+          <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+            {textContent}
           </ReactMarkdown>
         </div>
       )}

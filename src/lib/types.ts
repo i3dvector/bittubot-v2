@@ -1,12 +1,4 @@
-export type Role = 'user' | 'assistant';
-
-export type Message = {
-  id: string;
-  role: Role;
-  content: string;
-  createdAt: Date;
-};
-
+// Chat entry shown in the sidebar (mirrors the DB row shape)
 export type Chat = {
   id: string;
   title: string;
