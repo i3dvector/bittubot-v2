@@ -41,7 +41,7 @@ export default function Home() {
     [],
   );
 
-  const { messages, sendMessage, status, setMessages } = useChat({ transport });
+  const { messages, sendMessage, stop, status, setMessages } = useChat({ transport });
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -167,6 +167,7 @@ export default function Home() {
               value={input}
               onChange={setInput}
               onSubmit={handleSubmit}
+              onStop={stop}
               isLoading={isLoading}
             />
             <p className="text-center text-xs text-zinc-600 mt-2">

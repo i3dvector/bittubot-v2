@@ -16,6 +16,7 @@
     "@neondatabase/serverless": "^1.0.2",
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-slot": "^1.2.4",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "ai": "^6.0.142",
     "drizzle-orm": "^0.45.2",
     "framer-motion": "^12.38.0",
@@ -24,6 +25,7 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-markdown": "^10.1.0",
+    "react-syntax-highlighter": "^16.1.1",
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
