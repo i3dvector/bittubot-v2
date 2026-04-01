@@ -6,10 +6,10 @@
   - [x] Initialize Next.js 14+ App Router project (TS, Tailwind).
   - [x] Configure Biome/ESLint and Prettier.
   - [x] Set up project structure (`components`, `lib`, `app/api`).
-- [ ] **Phase 2: Database & Schema**
-  - [ ] Set up Neon Serverless Postgres.
+- [x] **Phase 2: Database & Schema**
+  - [x] Set up Neon Serverless Postgres.
   - [x] Configure Drizzle ORM and schema (`users`, `chats`, `messages`).
-  - [ ] Test database connectivity and create initial migration.
+  - [x] Test database connectivity and create initial migration.
 - [ ] **Phase 3: Premium UI Framework**
   - [ ] Build responsive layout (Sidebar + Main Content Area).
   - [ ] Create generic Chat Input (auto-resizing textarea, submit button).
