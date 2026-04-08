@@ -11,7 +11,12 @@ interface ChatSidebarProps {
   onToggle: () => void;
   onNewChat: () => void;
   onSelectChat: (id: string) => void;
+  persona: import('./PersonaSelector').PersonaType;
+  onChangePersona: (persona: import('./PersonaSelector').PersonaType) => void;
 }
+
+import PersonaSelector from './PersonaSelector';
+import { Settings } from 'lucide-react';
 
 export default function ChatSidebar({
   chats,
@@ -20,6 +25,8 @@ export default function ChatSidebar({
   onToggle,
   onNewChat,
   onSelectChat,
+  persona,
+  onChangePersona,
 }: ChatSidebarProps) {
   return (
     <AnimatePresence initial={false}>
@@ -30,7 +37,7 @@ export default function ChatSidebar({
           exit={{ width: 0, opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
           aria-label="Chat history"
-          className="flex flex-col h-full bg-zinc-950/40 backdrop-blur-3xl border-r border-white/5 overflow-hidden shrink-0 z-20"
+          className="flex flex-col h-full bg-[var(--sidebar-bg)] border-r border-black/10 dark:border-white/5 overflow-hidden shrink-0 z-20"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 shrink-0">
@@ -42,7 +49,7 @@ export default function ChatSidebar({
               aria-label="Collapse sidebar"
               aria-expanded={isOpen}
               aria-controls="chat-history-list"
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+              className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
@@ -53,10 +60,12 @@ export default function ChatSidebar({
             <button
               onClick={onNewChat}
               aria-label="Start a new chat"
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-zinc-300 border border-zinc-700 hover:border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-[0.9375rem] font-medium bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-white/10 transition-all focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] shadow-sm outline-none"
             >
-              <MessageSquarePlus size={15} aria-hidden="true" />
-              <span>New Chat</span>
+              <span className="flex items-center gap-2">
+                <MessageSquarePlus size={16} aria-hidden="true" />
+                New Chat
+              </span>
             </button>
           </div>
 
@@ -80,10 +89,10 @@ export default function ChatSidebar({
                         onClick={() => onSelectChat(chat.id)}
                         aria-label={`Open chat: ${chat.title}`}
                         aria-current={isActive ? 'page' : undefined}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-all outline-none ${
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[0.9375rem] text-left transition-all outline-none ${
                           isActive
-                            ? 'bg-zinc-800/60 text-zinc-100 font-medium shadow-sm border border-white/5'
-                            : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40 font-medium'
+                            ? 'bg-black/5 dark:bg-white/10 text-zinc-900 dark:text-zinc-100 font-medium'
+                            : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5 font-medium'
                         }`}
                       >
                         <MessageSquare size={13} className="shrink-0 opacity-60" aria-hidden="true" />
@@ -95,6 +104,20 @@ export default function ChatSidebar({
               </ul>
             )}
           </nav>
+
+          {/* Bottom actions: Persona and Settings */}
+          <div className="shrink-0 p-3 bg-[var(--sidebar-bg)] border-t border-black/10 dark:border-white/5">
+            <div className="flex flex-col gap-1">
+              <PersonaSelector persona={persona} onChange={onChangePersona} />
+              <button
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[0.9375rem] font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-all outline-none"
+                aria-label="Settings"
+              >
+                <Settings size={16} />
+                <span>Settings</span>
+              </button>
+            </div>
+          </div>
         </motion.aside>
       )}
     </AnimatePresence>

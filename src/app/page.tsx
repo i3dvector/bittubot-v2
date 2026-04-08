@@ -112,28 +112,28 @@ export default function Home() {
         onToggle={() => setSidebarOpen(false)}
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
+        persona={persona}
+        onChangePersona={setPersona}
       />
 
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 bg-[var(--background)]">
         {/* Top bar */}
-        <header className="flex items-center gap-3 px-4 py-3 border-b border-zinc-800 shrink-0">
+        <header className="flex items-center gap-3 px-4 py-3 shrink-0">
           {!sidebarOpen && (
             <button
               onClick={() => setSidebarOpen(true)}
               aria-label="Open sidebar"
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+              className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
             >
               <PanelLeftOpen size={18} />
             </button>
           )}
 
-          <span className="text-sm font-semibold text-zinc-300 mr-auto">
+          <span className="text-[0.9375rem] font-medium text-zinc-800 dark:text-zinc-300">
             {activeChatId
               ? (chatList.find((c) => c.id === activeChatId)?.title ?? 'Chat')
               : 'Bittubot'}
           </span>
-
-          <PersonaSelector persona={persona} onChange={setPersona} />
         </header>
 
         {/* Content — vertically centered splash OR scrollable chat */}
@@ -179,7 +179,7 @@ export default function Home() {
               className="flex flex-col items-center justify-center gap-6 text-center px-4 pb-12 w-full"
             >
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+                className="w-14 h-14 rounded-[1rem] flex items-center justify-center shadow-sm"
                 style={{
                   background: 'var(--accent-action-soft)',
                   border: '1px solid var(--accent-action-border)',
@@ -188,10 +188,10 @@ export default function Home() {
                 <Sparkles size={24} style={{ color: 'var(--accent-action)' }} />
               </div>
               <div className="space-y-2">
-                <h2 className="text-[1.75rem] font-medium text-zinc-50 tracking-tight">
+                <h2 className="text-[1.75rem] font-medium text-[var(--foreground)] tracking-tight">
                   How can I help you today?
                 </h2>
-                <p className="text-[0.9375rem] text-zinc-400 max-w-sm mx-auto leading-relaxed font-medium">
+                <p className="text-[0.9375rem] text-[var(--foreground)] opacity-70 max-w-sm mx-auto leading-relaxed">
                   Ask me anything — write code, brainstorm ideas, or just have a conversation.
                 </p>
               </div>
@@ -209,7 +209,7 @@ export default function Home() {
                 isLoading={isLoading}
                 isHero={!hasMessages}
               />
-              <p className={`text-center text-[0.75rem] text-zinc-500 font-medium mt-3 transition-opacity duration-300 ${hasMessages ? 'opacity-100' : 'opacity-0 hidden'}`}>
+              <p className={`text-center text-[0.75rem] text-[var(--foreground)] opacity-60 mt-3 transition-opacity duration-300 ${hasMessages ? 'opacity-100' : 'opacity-0 hidden'}`}>
                 Bittubot can make mistakes. Verify important information.
               </p>
             </div>

@@ -56,13 +56,13 @@ export default function ChatInput({
       <div
         onClick={handleContainerClick}
         className={`flex items-end gap-3 rounded-[1.25rem] px-4 py-3 cursor-text transition-all duration-300
-          bg-[#18181b]/50 backdrop-blur-2xl border border-white/10
-          shadow-[0_8px_32px_rgba(0,0,0,0.3)]
-          focus-within:bg-[#18181b]/80
+          bg-[var(--sidebar-bg)] border border-black/5 dark:border-white/5
+          shadow-sm
+          focus-within:bg-[var(--background)]
           focus-within:ring-1 focus-within:ring-[var(--accent-action)]/40
           focus-within:border-[var(--accent-action)]/30
-          focus-within:shadow-[0_8px_32px_transparent,0_0_20px_var(--accent-action-soft)]
-          ${isHero ? 'w-full shadow-[0_16px_48px_rgba(0,0,0,0.5)] bg-[#18181b]/70 border-white/15' : ''}`}
+          focus-within:shadow-[0_4px_24px_transparent,0_0_12px_var(--accent-action-soft)]
+          ${isHero ? 'w-full shadow-md bg-white dark:bg-[#1f1f1f]' : ''}`}
       >
         <textarea
           ref={textareaRef}
@@ -78,7 +78,7 @@ export default function ChatInput({
           autoComplete="off"
           spellCheck
           rows={1}
-          className={`flex-1 w-full bg-transparent text-zinc-50 placeholder:text-zinc-500 font-medium resize-none outline-none leading-[1.6] max-h-48 overflow-y-auto ${isHero ? 'text-[1rem] min-h-[52px]' : 'text-[0.9375rem] min-h-[44px]'}`}
+          className={`flex-1 w-full bg-transparent text-[var(--foreground)] placeholder:-[var(--foreground)]/50 resize-none outline-none leading-[1.6] max-h-48 overflow-y-auto ${isHero ? 'text-[1rem] min-h-[52px]' : 'text-[0.9375rem] min-h-[44px]'}`}
         />
 
         {isLoading && onStop ? (

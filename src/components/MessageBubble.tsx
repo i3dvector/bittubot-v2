@@ -99,16 +99,16 @@ const markdownComponents: Components = {
   },
 
   p: ({ children }) => (
-    <p className="mb-3 last:mb-0 leading-[1.7] text-zinc-200 text-[0.9375rem] tracking-tight">{children}</p>
+    <p className="mb-4 last:mb-0 leading-[1.65] text-[var(--foreground)] text-base">{children}</p>
   ),
 
   ul: ({ children }) => (
-    <ul className="mb-3 ml-5 space-y-1.5 list-disc marker:text-zinc-500 text-[0.9375rem]">{children}</ul>
+    <ul className="mb-4 ml-5 space-y-1.5 list-disc marker:text-[var(--foreground)] opacity-90 text-base">{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol className="mb-3 ml-5 space-y-1.5 list-decimal marker:text-zinc-500 text-[0.9375rem]">{children}</ol>
+    <ol className="mb-4 ml-5 space-y-1.5 list-decimal marker:text-[var(--foreground)] opacity-90 text-base">{children}</ol>
   ),
-  li: ({ children }) => <li className="text-zinc-200 leading-[1.7]">{children}</li>,
+  li: ({ children }) => <li className="text-[var(--foreground)] leading-[1.65]">{children}</li>,
 
   blockquote: ({ children }) => (
     <blockquote className="border-l-2 border-[var(--accent-action)]/40 pl-4 my-3 text-zinc-400 italic">
@@ -200,11 +200,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
       aria-label={`${isUser ? 'Your message' : 'Bittubot response'}`}
     >
       {isUser ? (
-        <div className="md:max-w-[75%] px-[1.125rem] py-3 rounded-[1.25rem] bg-[#27272a]/90 backdrop-blur-xl text-zinc-50 text-[0.9375rem] font-medium leading-[1.65] whitespace-pre-wrap shadow-[0_2px_8px_rgba(0,0,0,0.15)] border border-white/10">
+        <div className="md:max-w-[80%] px-[1.25rem] py-3 rounded-[1.25rem] bg-[var(--bubble-user)] text-[var(--foreground)] text-[0.9375rem] leading-[1.6] whitespace-pre-wrap">
           {textContent}
         </div>
       ) : (
-        <div className="max-w-[85%] text-sm">
+        <div className="w-full text-base">
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
             {textContent}
           </ReactMarkdown>

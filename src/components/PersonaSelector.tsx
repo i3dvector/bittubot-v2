@@ -41,7 +41,7 @@ export default function PersonaSelector({ persona, onChange }: PersonaSelectorPr
         aria-label={`Current persona: ${active.label}. Click to change.`}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-all focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-300 hover:text-zinc-100 hover:bg-white/5 transition-all focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
       >
         <active.icon size={13} className="text-[var(--accent-action)]" aria-hidden="true" />
         <span>{active.label}</span>
@@ -61,7 +61,7 @@ export default function PersonaSelector({ persona, onChange }: PersonaSelectorPr
             transition={{ duration: 0.15 }}
             role="listbox"
             aria-label="Select persona"
-            className="absolute top-full left-0 mt-1.5 w-56 bg-zinc-900 border border-zinc-700 rounded-xl shadow-xl shadow-black/30 overflow-hidden z-50"
+            className="absolute bottom-full left-0 mb-1.5 w-[calc(100%-1rem)] bg-[#252525] border border-white/10 rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.5)] overflow-hidden z-50 ml-2"
           >
             {personas.map((p) => {
               const isActive = persona === p.id;
@@ -77,8 +77,8 @@ export default function PersonaSelector({ persona, onChange }: PersonaSelectorPr
                   }}
                   className={`w-full flex items-start gap-3 px-3.5 py-3 text-left transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none ${
                     isActive
-                      ? 'bg-zinc-800 text-zinc-100'
-                      : 'text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200'
+                      ? 'bg-white/10 text-zinc-100'
+                      : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-200'
                   }`}
                 >
                   <Icon size={15} className="mt-0.5 shrink-0 text-[var(--accent-action)]" aria-hidden="true" />

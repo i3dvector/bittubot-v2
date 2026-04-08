@@ -2,17 +2,36 @@
 
 /* ── Persona theming ─────────────────────────────────────────────────── */
 :root {
-  --background: #09090b; /* zinc-950 */
-  --foreground: #fafafa;
-  --accent-action: #3b82f6; /* blue-500 — default persona */
-  --accent-action-soft: rgba(59, 130, 246, 0.12);
-  --accent-action-border: rgba(59, 130, 246, 0.22);
+  --background: #fdfdfc; /* Clean off-white Claude style */
+  --foreground: #1c1c1c;
+  --accent-action: #d97757; /* Claude-like orange/copper accent */
+  --accent-action-soft: rgba(217, 119, 87, 0.12);
+  --accent-action-border: rgba(217, 119, 87, 0.22);
+  --sidebar-bg: #f5f4ef; /* Warm light gray sidebar */
+  --bubble-user: #f0eee2;
 }
 
 [data-theme='bittusan'] {
-  --accent-action: #10b981; /* emerald-500 */
-  --accent-action-soft: rgba(16, 185, 129, 0.12);
-  --accent-action-border: rgba(16, 185, 129, 0.22);
+  --background: #111a14; /* Deep organic forest green */
+  --foreground: #e6edd9; /* Soft pale green/white text */
+  --accent-action: #2eb872; /* Vibrant leaf green */
+  --accent-action-soft: rgba(46, 184, 114, 0.12);
+  --accent-action-border: rgba(46, 184, 114, 0.22);
+  --sidebar-bg: #0d140f; /* Even darker green sidebar */
+  --bubble-user: #1a2920; 
+}
+
+/* Add a dark mode default for users preferring dark overall */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1e1e1e; /* Claude dark mode */
+    --foreground: #e5e5e5;
+    --accent-action: #d97757;
+    --accent-action-soft: rgba(217, 119, 87, 0.15);
+    --accent-action-border: rgba(217, 119, 87, 0.3);
+    --sidebar-bg: #252525;
+    --bubble-user: #2c2d2c;
+  }
 }
 
 @theme inline {
@@ -29,11 +48,11 @@ html {
 
 body {
   background-color: var(--background);
-  background-image: radial-gradient(ellipse 90% 80% at 50% -20%, rgba(120, 119, 198, 0.12), transparent);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.4s ease, color 0.4s ease;
   letter-spacing: -0.01em;
 }
 
