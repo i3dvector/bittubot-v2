@@ -9,6 +9,7 @@ interface ChatInputProps {
   onSubmit: () => void;
   onStop?: () => void;
   isLoading?: boolean;
+  isHero?: boolean;
 }
 
 export default function ChatInput({
@@ -17,6 +18,7 @@ export default function ChatInput({
   onSubmit,
   onStop,
   isLoading = false,
+  isHero = false,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -35,7 +37,6 @@ export default function ChatInput({
     }
   };
 
-  // Clicking anywhere in the padded container focuses the textarea
   const handleContainerClick = () => {
     textareaRef.current?.focus();
   };
@@ -48,14 +49,20 @@ export default function ChatInput({
       aria-label="Message composer"
       aria-busy={isLoading}
     >
-      {/* Keyboard shortcut hint — screen-reader only */}
       <span id="chat-input-hint" className="sr-only">
         Press Enter to send your message. Press Shift and Enter together to add a new line.
       </span>
 
       <div
         onClick={handleContainerClick}
-        className="flex items-end gap-3 bg-zinc-900 border border-zinc-700 rounded-2xl px-4 py-3 cursor-text focus-within:border-zinc-500 transition-colors"
+        className={`flex items-end gap-3 rounded-[1.25rem] px-4 py-3 cursor-text transition-all duration-300
+          bg-[#18181b]/50 backdrop-blur-2xl border border-white/10
+          shadow-[0_8px_32px_rgba(0,0,0,0.3)]
+          focus-within:bg-[#18181b]/80
+          focus-within:ring-1 focus-within:ring-[var(--accent-action)]/40
+          focus-within:border-[var(--accent-action)]/30
+          focus-within:shadow-[0_8px_32px_transparent,0_0_20px_var(--accent-action-soft)]
+          ${isHero ? 'w-full shadow-[0_16px_48px_rgba(0,0,0,0.5)] bg-[#18181b]/70 border-white/15' : ''}`}
       >
         <textarea
           ref={textareaRef}
@@ -71,15 +78,14 @@ export default function ChatInput({
           autoComplete="off"
           spellCheck
           rows={1}
-          className="flex-1 w-full bg-transparent text-zinc-100 placeholder:text-zinc-500 text-sm resize-none outline-none leading-relaxed max-h-48 overflow-y-auto"
+          className={`flex-1 w-full bg-transparent text-zinc-50 placeholder:text-zinc-500 font-medium resize-none outline-none leading-[1.6] max-h-48 overflow-y-auto ${isHero ? 'text-[1rem] min-h-[52px]' : 'text-[0.9375rem] min-h-[44px]'}`}
         />
 
-        {/* Stop button while streaming; send button otherwise */}
         {isLoading && onStop ? (
           <button
             onClick={(e) => { e.stopPropagation(); onStop(); }}
             aria-label="Stop generating response"
-            className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-zinc-700 text-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+            className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-zinc-700/80 text-zinc-300 hover:bg-zinc-600 hover:text-zinc-100 transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
           >
             <Square size={13} fill="currentColor" />
           </button>

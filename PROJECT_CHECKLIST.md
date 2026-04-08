@@ -22,10 +22,11 @@
   - [x] Implement robust Markdown parsing with custom styling.
   - [x] Add Framer Motion animations for messages.
   - [x] Add keyboard shortcuts and ARIA accessibility labels.
-- [ ] **Phase 6: Persona & Dynamic Polish**
+- [ ] **Phase 6: Persona & Extreme UI Polish**
   - [ ] Add `PersonaSelector` component and store state in `page.tsx`.
   - [ ] Create system prompts and implement passing persona in API payload.
-  - [ ] Implement `framer-motion` centered-to-bottom layout for empty state.
+  - [ ] Execute Extreme Polish: Typography overhaul, Glassmorphism, Deep shadows.
+  - [ ] Implement `framer-motion` centered-to-bottom layout for empty state with a Glowing Hero greeting.
   - [ ] Fix ChatInput focus bug via wrapping div onClick handler.
 - [ ] **Phase 7: Deployment & Domain Configuration**
   - [ ] Deploy repository to Vercel and input Env Vars.

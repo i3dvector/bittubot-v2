@@ -104,7 +104,7 @@ export default function Home() {
   const hasMessages = messages.length > 0;
 
   return (
-    <div data-theme={persona} className="flex h-screen bg-zinc-950 text-zinc-100 overflow-hidden">
+    <div data-theme={persona} className="flex h-screen bg-transparent text-zinc-100 overflow-hidden selection:bg-[var(--accent-action-soft)] selection:text-[var(--accent-action)]">
       <ChatSidebar
         chats={chatList}
         activeChatId={activeChatId}
@@ -140,7 +140,7 @@ export default function Home() {
         <motion.div
           layout
           className={`flex-1 flex flex-col min-h-0 ${
-            hasMessages ? 'justify-between' : 'justify-center'
+            hasMessages ? 'justify-between' : 'justify-center items-center'
           }`}
         >
           {hasMessages ? (
@@ -173,13 +173,13 @@ export default function Home() {
           ) : (
             /* Centered splash greeting */
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="flex flex-col items-center justify-center gap-5 text-center px-4 pb-6"
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+              className="flex flex-col items-center justify-center gap-6 text-center px-4 pb-12 w-full"
             >
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
                 style={{
                   background: 'var(--accent-action-soft)',
                   border: '1px solid var(--accent-action-border)',
@@ -187,11 +187,11 @@ export default function Home() {
               >
                 <Sparkles size={24} style={{ color: 'var(--accent-action)' }} />
               </div>
-              <div className="space-y-1.5">
-                <h2 className="text-xl font-semibold text-zinc-100">
+              <div className="space-y-2">
+                <h2 className="text-[1.75rem] font-medium text-zinc-50 tracking-tight">
                   How can I help you today?
                 </h2>
-                <p className="text-sm text-zinc-500 max-w-xs leading-relaxed">
+                <p className="text-[0.9375rem] text-zinc-400 max-w-sm mx-auto leading-relaxed font-medium">
                   Ask me anything — write code, brainstorm ideas, or just have a conversation.
                 </p>
               </div>
@@ -199,16 +199,17 @@ export default function Home() {
           )}
 
           {/* Input — always at the bottom */}
-          <div className="shrink-0 px-4 py-4 border-t border-zinc-800">
-            <div className="max-w-3xl mx-auto">
+          <div className="shrink-0 px-4 pt-2 pb-6 w-full relative z-10 flex flex-col items-center">
+            <div className={`w-full max-w-3xl transition-all duration-500 ${hasMessages ? '' : 'absolute bottom-1/2 translate-y-16'}`}>
               <ChatInput
                 value={input}
                 onChange={setInput}
                 onSubmit={handleSubmit}
                 onStop={stop}
                 isLoading={isLoading}
+                isHero={!hasMessages}
               />
-              <p className="text-center text-xs text-zinc-600 mt-2">
+              <p className={`text-center text-[0.75rem] text-zinc-500 font-medium mt-3 transition-opacity duration-300 ${hasMessages ? 'opacity-100' : 'opacity-0 hidden'}`}>
                 Bittubot can make mistakes. Verify important information.
               </p>
             </div>

@@ -22,16 +22,16 @@ function CodeBlock({ language, children }: { language: string; children: string 
   };
 
   return (
-    <div className="my-4 rounded-xl overflow-hidden border border-zinc-700/70 bg-[#1e1e1e]">
+    <div className="my-4 rounded-xl overflow-hidden border border-zinc-800/60 bg-zinc-900/50 shadow-sm">
       {/* Header bar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-zinc-800/80 border-b border-zinc-700/50">
-        <span className="text-[11px] text-zinc-500 font-mono tracking-wide">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800/60">
+        <span className="text-[11px] text-zinc-500 font-mono tracking-wide uppercase">
           {language || 'plaintext'}
         </span>
         <button
           onClick={handleCopy}
           aria-label={copied ? 'Code copied to clipboard' : 'Copy code to clipboard'}
-          className="flex items-center gap-1.5 text-[11px] text-zinc-400 hover:text-zinc-100 transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none rounded px-2 py-0.5"
+          className="flex items-center gap-1.5 text-[11px] text-zinc-500 hover:text-zinc-200 transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none rounded px-2 py-0.5"
         >
           <motion.span
             key={copied ? 'check' : 'copy'}
@@ -77,7 +77,6 @@ function CodeBlock({ language, children }: { language: string; children: string 
 // ─── Markdown component map ───────────────────────────────────────────────────
 
 const markdownComponents: Components = {
-  // Block code — let the code component handle rendering; pre is a passthrough
   pre: ({ children }) => <>{children}</>,
 
   code: ({ children, className }) => {
@@ -93,32 +92,32 @@ const markdownComponents: Components = {
     }
 
     return (
-      <code className="bg-zinc-800 text-[var(--accent-action)] px-1.5 py-0.5 rounded text-[0.78rem] font-mono">
+      <code className="bg-zinc-800/80 text-[var(--accent-action)] px-1.5 py-0.5 rounded text-[0.78rem] font-mono">
         {children}
       </code>
     );
   },
 
   p: ({ children }) => (
-    <p className="mb-3 last:mb-0 leading-7 text-zinc-200">{children}</p>
+    <p className="mb-3 last:mb-0 leading-[1.7] text-zinc-200 text-[0.9375rem] tracking-tight">{children}</p>
   ),
 
   ul: ({ children }) => (
-    <ul className="mb-3 ml-4 space-y-1 list-disc marker:text-zinc-500">{children}</ul>
+    <ul className="mb-3 ml-5 space-y-1.5 list-disc marker:text-zinc-500 text-[0.9375rem]">{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol className="mb-3 ml-4 space-y-1 list-decimal marker:text-zinc-500">{children}</ol>
+    <ol className="mb-3 ml-5 space-y-1.5 list-decimal marker:text-zinc-500 text-[0.9375rem]">{children}</ol>
   ),
-  li: ({ children }) => <li className="text-zinc-300 leading-7">{children}</li>,
+  li: ({ children }) => <li className="text-zinc-200 leading-[1.7]">{children}</li>,
 
   blockquote: ({ children }) => (
-    <blockquote className="border-l-2 border-[var(--accent-action)] pl-4 my-3 text-zinc-400 italic">
+    <blockquote className="border-l-2 border-[var(--accent-action)]/40 pl-4 my-3 text-zinc-400 italic">
       {children}
     </blockquote>
   ),
 
   h1: ({ children }) => (
-    <h1 className="text-lg font-semibold text-zinc-100 mb-2 mt-5 first:mt-0 pb-1 border-b border-zinc-800">
+    <h1 className="text-lg font-semibold text-zinc-100 mb-2 mt-5 first:mt-0 pb-1 border-b border-zinc-800/60">
       {children}
     </h1>
   ),
@@ -134,27 +133,27 @@ const markdownComponents: Components = {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-[var(--accent-action)] underline underline-offset-2 hover:text-[var(--accent-action)] transition-colors"
+      className="text-[var(--accent-action)] underline underline-offset-2 hover:brightness-125 transition-all"
     >
       {children}
     </a>
   ),
 
-  hr: () => <hr className="border-zinc-800 my-5" />,
+  hr: () => <hr className="border-zinc-800/60 my-5" />,
 
   table: ({ children }) => (
-    <div className="overflow-x-auto my-4 rounded-lg border border-zinc-700/50">
+    <div className="overflow-x-auto my-4 rounded-lg border border-zinc-800/50">
       <table className="w-full text-sm border-collapse">{children}</table>
     </div>
   ),
-  thead: ({ children }) => <thead className="bg-zinc-800/60">{children}</thead>,
+  thead: ({ children }) => <thead className="bg-zinc-800/40">{children}</thead>,
   th: ({ children }) => (
-    <th className="border-b border-zinc-700/50 px-4 py-2 text-left text-xs font-semibold text-zinc-300 uppercase tracking-wide">
+    <th className="border-b border-zinc-800/50 px-4 py-2 text-left text-xs font-semibold text-zinc-300 uppercase tracking-wide">
       {children}
     </th>
   ),
   td: ({ children }) => (
-    <td className="border-b border-zinc-800/50 px-4 py-2.5 text-zinc-300 last:border-b-0">
+    <td className="border-b border-zinc-800/30 px-4 py-2.5 text-zinc-300 last:border-b-0">
       {children}
     </td>
   ),
@@ -162,7 +161,7 @@ const markdownComponents: Components = {
   strong: ({ children }) => (
     <strong className="font-semibold text-zinc-100">{children}</strong>
   ),
-  em: ({ children }) => <em className="italic text-zinc-300">{children}</em>,
+  em: ({ children }) => <em className="italic text-zinc-400">{children}</em>,
 };
 
 // ─── Animation variants ───────────────────────────────────────────────────────
@@ -201,7 +200,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
       aria-label={`${isUser ? 'Your message' : 'Bittubot response'}`}
     >
       {isUser ? (
-        <div className="max-w-[75%] px-4 py-3 rounded-2xl rounded-tr-md bg-zinc-800 text-zinc-100 text-sm leading-7 whitespace-pre-wrap shadow-sm">
+        <div className="md:max-w-[75%] px-[1.125rem] py-3 rounded-[1.25rem] bg-[#27272a]/90 backdrop-blur-xl text-zinc-50 text-[0.9375rem] font-medium leading-[1.65] whitespace-pre-wrap shadow-[0_2px_8px_rgba(0,0,0,0.15)] border border-white/10">
           {textContent}
         </div>
       ) : (

@@ -22,10 +22,29 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: radial-gradient(ellipse 90% 80% at 50% -20%, rgba(120, 119, 198, 0.12), transparent);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+}
+
+/* ── Radial gradient overlay ─────────────────────────────────────────── */
+.bg-app {
+  background-color: #09090b;
+  background-image: radial-gradient(
+    ellipse 80% 80% at 50% -20%,
+    rgba(120, 119, 198, 0.15),
+    rgba(255, 255, 255, 0)
+  );
 }
 
 /* ── Custom scrollbar ────────────────────────────────────────────────── */
