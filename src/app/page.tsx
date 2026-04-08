@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
 import { PanelLeftOpen, Sparkles } from 'lucide-react';
@@ -109,7 +109,21 @@ export default function Home() {
   const hasMessages = messages.length > 0;
 
   return (
-    <div data-theme={persona} className="flex h-screen bg-transparent text-zinc-100 overflow-hidden selection:bg-[var(--accent-action-soft)] selection:text-[var(--accent-action)]">
+    <div data-theme={persona} className="flex h-screen bg-transparent text-zinc-100 overflow-hidden relative selection:bg-[var(--accent-action-soft)] selection:text-[var(--accent-action)]">
+      
+      {/* Mobile Sidebar Backdrop */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="md:hidden absolute inset-0 bg-black/40 z-40 backdrop-blur-sm"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       <ChatSidebar
         chats={chatList}
         activeChatId={activeChatId}
@@ -128,7 +142,7 @@ export default function Home() {
             <button
               onClick={() => setSidebarOpen(true)}
               aria-label="Open sidebar"
-              className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+              className="p-1.5 -ml-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
             >
               <PanelLeftOpen size={18} />
             </button>
@@ -151,8 +165,8 @@ export default function Home() {
           {hasMessages ? (
             /* Chat messages */
             <div className="flex-1 overflow-y-auto">
-              <div className="max-w-3xl mx-auto w-full px-4 py-6">
-                <div className="space-y-6 pb-2">
+              <div className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 md:py-8">
+                <div className="space-y-6 md:space-y-8 pb-2">
                   {messages.map((msg) => (
                     <MessageBubble key={msg.id} message={msg} />
                   ))}

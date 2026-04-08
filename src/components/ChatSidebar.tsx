@@ -33,11 +33,11 @@ export default function ChatSidebar({
       {isOpen && (
         <motion.aside
           initial={{ width: 0, opacity: 0 }}
-          animate={{ width: 260, opacity: 1 }}
+          animate={{ width: 280, opacity: 1 }}
           exit={{ width: 0, opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
           aria-label="Chat history"
-          className="flex flex-col h-full bg-[var(--sidebar-bg)] border-r border-black/10 dark:border-white/5 overflow-hidden shrink-0 z-20"
+          className="absolute md:relative flex flex-col h-full bg-[var(--sidebar-bg)] border-r border-black/10 dark:border-white/5 overflow-hidden shrink-0 z-50 shadow-2xl md:shadow-none"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 shrink-0">
@@ -86,7 +86,10 @@ export default function ChatSidebar({
                   return (
                     <li key={chat.id} role="listitem">
                       <button
-                        onClick={() => onSelectChat(chat.id)}
+                        onClick={() => {
+                          onSelectChat(chat.id);
+                          if (window.innerWidth < 768) onToggle();
+                        }}
                         aria-label={`Open chat: ${chat.title}`}
                         aria-current={isActive ? 'page' : undefined}
                         className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[0.9375rem] text-left transition-all outline-none ${

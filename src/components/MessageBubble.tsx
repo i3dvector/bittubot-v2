@@ -200,7 +200,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
       aria-label={`${isUser ? 'Your message' : 'Bittubot response'}`}
     >
       {isUser ? (
-        <div className="md:max-w-[80%] px-[1.25rem] py-3 rounded-[1.25rem] bg-[var(--bubble-user)] text-[var(--foreground)] text-[0.9375rem] leading-[1.6] whitespace-pre-wrap">
+        <div className="max-w-[92%] md:max-w-[80%] px-[1.25rem] py-3 rounded-[1.25rem] bg-[var(--bubble-user)] text-[var(--foreground)] text-[0.9375rem] leading-[1.6] whitespace-pre-wrap">
           {textContent}
         </div>
       ) : (
