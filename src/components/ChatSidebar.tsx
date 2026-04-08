@@ -42,7 +42,7 @@ export default function ChatSidebar({
               aria-label="Collapse sidebar"
               aria-expanded={isOpen}
               aria-controls="chat-history-list"
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
@@ -53,7 +53,7 @@ export default function ChatSidebar({
             <button
               onClick={onNewChat}
               aria-label="Start a new chat"
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-zinc-300 border border-zinc-700 hover:border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-zinc-300 border border-zinc-700 hover:border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800 transition-all hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
             >
               <MessageSquarePlus size={15} aria-hidden="true" />
               <span>New Chat</span>
@@ -80,7 +80,7 @@ export default function ChatSidebar({
                         onClick={() => onSelectChat(chat.id)}
                         aria-label={`Open chat: ${chat.title}`}
                         aria-current={isActive ? 'page' : undefined}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-all hover:scale-[1.01] active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none ${
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-all hover:scale-[1.01] active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none ${
                           isActive
                             ? 'bg-zinc-800 text-zinc-100'
                             : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'

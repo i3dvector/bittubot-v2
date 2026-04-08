@@ -1,18 +1,18 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
-import { PanelLeftOpen } from 'lucide-react';
+import { PanelLeftOpen, Sparkles } from 'lucide-react';
 import ChatSidebar from '@/components/ChatSidebar';
 import ChatInput from '@/components/ChatInput';
 import MessageBubble from '@/components/MessageBubble';
-import EmptyState from '@/components/EmptyState';
+import PersonaSelector, { type PersonaType } from '@/components/PersonaSelector';
 import {
   createChatAction,
   getChatMessagesAction,
   getChatsAction,
-  updateChatTitleAction,
 } from '@/lib/actions';
 import type { Chat } from '@/lib/types';
 
@@ -21,13 +21,15 @@ export default function Home() {
   const [chatList, setChatList] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [input, setInput] = useState('');
+  const [persona, setPersona] = useState<PersonaType>('default');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Ref so prepareSendMessagesRequest always reads the latest chatId
+  // Refs so prepareSendMessagesRequest always reads the latest values
   const activeChatIdRef = useRef<string | null>(null);
   activeChatIdRef.current = activeChatId;
+  const personaRef = useRef<PersonaType>(persona);
+  personaRef.current = persona;
 
-  // Track whether this chat has had its title auto-set from first message
   const titleSetRef = useRef<Set<string>>(new Set());
 
   const transport = useMemo(
@@ -35,7 +37,11 @@ export default function Home() {
       new DefaultChatTransport({
         api: '/api/chat',
         prepareSendMessagesRequest: ({ messages }) => ({
-          body: { messages, chatId: activeChatIdRef.current },
+          body: {
+            messages,
+            chatId: activeChatIdRef.current,
+            persona: personaRef.current,
+          },
         }),
       }),
     [],
@@ -77,7 +83,6 @@ export default function Home() {
 
     let chatId = activeChatIdRef.current;
 
-    // Create new chat record on first message
     if (!chatId) {
       const title = input.trim().slice(0, 50);
       const chat = await createChatAction(title);
@@ -92,14 +97,14 @@ export default function Home() {
     setInput('');
     await sendMessage({ text });
 
-    // Refresh chat list (title may have been updated)
     getChatsAction().then((rows) => setChatList(rows as Chat[]));
   }, [input, status, sendMessage]);
 
   const isLoading = status === 'submitted' || status === 'streaming';
+  const hasMessages = messages.length > 0;
 
   return (
-    <div className="flex h-screen bg-zinc-950 text-zinc-100 overflow-hidden">
+    <div data-theme={persona} className="flex h-screen bg-zinc-950 text-zinc-100 overflow-hidden">
       <ChatSidebar
         chats={chatList}
         activeChatId={activeChatId}
@@ -116,65 +121,99 @@ export default function Home() {
             <button
               onClick={() => setSidebarOpen(true)}
               aria-label="Open sidebar"
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
             >
               <PanelLeftOpen size={18} />
             </button>
           )}
-          <span className="text-sm font-semibold text-zinc-300">
+
+          <span className="text-sm font-semibold text-zinc-300 mr-auto">
             {activeChatId
               ? (chatList.find((c) => c.id === activeChatId)?.title ?? 'Chat')
               : 'Bittubot'}
           </span>
+
+          <PersonaSelector persona={persona} onChange={setPersona} />
         </header>
 
-        {/* Message list */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto w-full h-full px-4 py-6">
-            {messages.length === 0 ? (
-              <EmptyState />
-            ) : (
-              <div className="space-y-6 pb-2">
-                {messages.map((msg) => (
-                  <MessageBubble key={msg.id} message={msg} />
-                ))}
+        {/* Content — vertically centered splash OR scrollable chat */}
+        <motion.div
+          layout
+          className={`flex-1 flex flex-col min-h-0 ${
+            hasMessages ? 'justify-between' : 'justify-center'
+          }`}
+        >
+          {hasMessages ? (
+            /* Chat messages */
+            <div className="flex-1 overflow-y-auto">
+              <div className="max-w-3xl mx-auto w-full px-4 py-6">
+                <div className="space-y-6 pb-2">
+                  {messages.map((msg) => (
+                    <MessageBubble key={msg.id} message={msg} />
+                  ))}
 
-                {/* Submitted but not yet streaming */}
-                {status === 'submitted' && (
-                  <div className="flex justify-start">
-                    <div className="flex items-center gap-1.5 px-4 py-3">
-                      {[0, 1, 2].map((i) => (
-                        <span
-                          key={i}
-                          className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-bounce"
-                          style={{ animationDelay: `${i * 0.15}s` }}
-                        />
-                      ))}
+                  {status === 'submitted' && (
+                    <div className="flex justify-start">
+                      <div className="flex items-center gap-1.5 px-4 py-3">
+                        {[0, 1, 2].map((i) => (
+                          <span
+                            key={i}
+                            className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-bounce"
+                            style={{ animationDelay: `${i * 0.15}s` }}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div ref={messagesEndRef} />
+                  <div ref={messagesEndRef} />
+                </div>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          ) : (
+            /* Centered splash greeting */
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="flex flex-col items-center justify-center gap-5 text-center px-4 pb-6"
+            >
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                style={{
+                  background: 'var(--accent-action-soft)',
+                  border: '1px solid var(--accent-action-border)',
+                }}
+              >
+                <Sparkles size={24} style={{ color: 'var(--accent-action)' }} />
+              </div>
+              <div className="space-y-1.5">
+                <h2 className="text-xl font-semibold text-zinc-100">
+                  How can I help you today?
+                </h2>
+                <p className="text-sm text-zinc-500 max-w-xs leading-relaxed">
+                  Ask me anything — write code, brainstorm ideas, or just have a conversation.
+                </p>
+              </div>
+            </motion.div>
+          )}
 
-        {/* Input */}
-        <div className="shrink-0 px-4 py-4 border-t border-zinc-800">
-          <div className="max-w-3xl mx-auto">
-            <ChatInput
-              value={input}
-              onChange={setInput}
-              onSubmit={handleSubmit}
-              onStop={stop}
-              isLoading={isLoading}
-            />
-            <p className="text-center text-xs text-zinc-600 mt-2">
-              Bittubot can make mistakes. Verify important information.
-            </p>
+          {/* Input — always at the bottom */}
+          <div className="shrink-0 px-4 py-4 border-t border-zinc-800">
+            <div className="max-w-3xl mx-auto">
+              <ChatInput
+                value={input}
+                onChange={setInput}
+                onSubmit={handleSubmit}
+                onStop={stop}
+                isLoading={isLoading}
+              />
+              <p className="text-center text-xs text-zinc-600 mt-2">
+                Bittubot can make mistakes. Verify important information.
+              </p>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

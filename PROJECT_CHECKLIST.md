@@ -10,18 +10,24 @@
   - [x] Set up Neon Serverless Postgres.
   - [x] Configure Drizzle ORM and schema (`users`, `chats`, `messages`).
   - [x] Test database connectivity and create initial migration.
-- [ ] **Phase 3: Premium UI Framework**
-  - [ ] Build responsive layout (Sidebar + Main Content Area).
-  - [ ] Create generic Chat Input (auto-resizing textarea, submit button).
-  - [ ] Design and implement Empty State UI.
-- [ ] **Phase 4: AI & Streaming Engine**
-  - [ ] Install Vercel AI SDK (`ai` package).
-  - [ ] Build `/api/chat` edge route handler.
-  - [ ] Integrate `useChat` hook into the main Chat UI components.
-- [ ] **Phase 5: Polish & "Anthropic-grade" Features**
-  - [ ] Implement robust Markdown parsing with custom styling.
-  - [ ] Add Framer Motion animations for messages.
-  - [ ] Add keyboard shortcuts and ARIA accessibility labels.
-- [ ] **Phase 6: Deployment**
-  - [ ] Setup Vercel project and environment variables.
-  - [ ] Trigger first production build.
+- [x] **Phase 3: Premium UI Framework**
+  - [x] Build responsive layout (Sidebar + Main Content Area).
+  - [x] Create generic Chat Input (auto-resizing textarea, submit button).
+  - [x] Design and implement Empty State UI.
+- [x] **Phase 4: AI & Streaming Engine**
+  - [x] Install Vercel AI SDK (`ai` package).
+  - [x] Build `/api/chat` edge route handler.
+  - [x] Integrate `useChat` hook into the main Chat UI components.
+- [x] **Phase 5: Polish & "Anthropic-grade" Features**
+  - [x] Implement robust Markdown parsing with custom styling.
+  - [x] Add Framer Motion animations for messages.
+  - [x] Add keyboard shortcuts and ARIA accessibility labels.
+- [ ] **Phase 6: Persona & Dynamic Polish**
+  - [ ] Add `PersonaSelector` component and store state in `page.tsx`.
+  - [ ] Create system prompts and implement passing persona in API payload.
+  - [ ] Implement `framer-motion` centered-to-bottom layout for empty state.
+  - [ ] Fix ChatInput focus bug via wrapping div onClick handler.
+- [ ] **Phase 7: Deployment & Domain Configuration**
+  - [ ] Deploy repository to Vercel and input Env Vars.
+  - [ ] Configure `bittubot.com` domain in Vercel.
+  - [ ] Map Cloudflare DNS settings.

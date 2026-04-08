@@ -31,7 +31,7 @@ function CodeBlock({ language, children }: { language: string; children: string 
         <button
           onClick={handleCopy}
           aria-label={copied ? 'Code copied to clipboard' : 'Copy code to clipboard'}
-          className="flex items-center gap-1.5 text-[11px] text-zinc-400 hover:text-zinc-100 transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none rounded px-2 py-0.5"
+          className="flex items-center gap-1.5 text-[11px] text-zinc-400 hover:text-zinc-100 transition-all hover:scale-105 active:scale-95 focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none rounded px-2 py-0.5"
         >
           <motion.span
             key={copied ? 'check' : 'copy'}
@@ -42,8 +42,8 @@ function CodeBlock({ language, children }: { language: string; children: string 
           >
             {copied ? (
               <>
-                <Check size={11} className="text-emerald-400" />
-                <span className="text-emerald-400">Copied!</span>
+                <Check size={11} className="text-[var(--accent-action)]" />
+                <span className="text-[var(--accent-action)]">Copied!</span>
               </>
             ) : (
               <>
@@ -93,7 +93,7 @@ const markdownComponents: Components = {
     }
 
     return (
-      <code className="bg-zinc-800 text-emerald-300 px-1.5 py-0.5 rounded text-[0.78rem] font-mono">
+      <code className="bg-zinc-800 text-[var(--accent-action)] px-1.5 py-0.5 rounded text-[0.78rem] font-mono">
         {children}
       </code>
     );
@@ -112,7 +112,7 @@ const markdownComponents: Components = {
   li: ({ children }) => <li className="text-zinc-300 leading-7">{children}</li>,
 
   blockquote: ({ children }) => (
-    <blockquote className="border-l-2 border-emerald-500/60 pl-4 my-3 text-zinc-400 italic">
+    <blockquote className="border-l-2 border-[var(--accent-action)] pl-4 my-3 text-zinc-400 italic">
       {children}
     </blockquote>
   ),
@@ -134,7 +134,7 @@ const markdownComponents: Components = {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300 transition-colors"
+      className="text-[var(--accent-action)] underline underline-offset-2 hover:text-[var(--accent-action)] transition-colors"
     >
       {children}
     </a>
