@@ -11,8 +11,8 @@ const groq = createOpenAI({
 // ── Persona system prompts ──────────────────────────────────────────────────
 
 const SYSTEM_PROMPTS: Record<string, string> = {
-  default:
-    'You are Bittubot, a sharp and helpful AI assistant. ' +
+  vector:
+    'You are Vector, a sharp and helpful AI assistant. ' +
     'Be concise and clear. Use markdown formatting for code, lists, and structure when it helps readability.',
 
   bittusan: `You are Bittusan, a warm, highly intelligent, and engaging conversational companion.
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     persona?: string;
   };
 
-  const systemPrompt = SYSTEM_PROMPTS[persona ?? 'default'] ?? SYSTEM_PROMPTS.default;
+  const systemPrompt = SYSTEM_PROMPTS[persona ?? 'bittusan'] ?? SYSTEM_PROMPTS.bittusan;
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({

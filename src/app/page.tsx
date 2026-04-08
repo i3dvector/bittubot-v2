@@ -21,7 +21,7 @@ export default function Home() {
   const [chatList, setChatList] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [input, setInput] = useState('');
-  const [persona, setPersona] = useState<PersonaType>('default');
+  const [persona, setPersona] = useState<PersonaType>('bittusan');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Refs so prepareSendMessagesRequest always reads the latest values

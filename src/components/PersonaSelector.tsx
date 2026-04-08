@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Bot, Sparkles } from 'lucide-react';
 
-export type PersonaType = 'default' | 'bittusan';
+export type PersonaType = 'vector' | 'bittusan';
 
 interface PersonaSelectorProps {
   persona: PersonaType;
@@ -12,8 +12,8 @@ interface PersonaSelectorProps {
 }
 
 const personas: { id: PersonaType; label: string; description: string; icon: typeof Bot }[] = [
-  { id: 'default', label: 'Default AI', description: 'Sharp, concise assistant', icon: Bot },
   { id: 'bittusan', label: 'Bittusan', description: 'Warm, conversational companion', icon: Sparkles },
+  { id: 'vector', label: 'Vector', description: 'Sharp, concise assistant', icon: Bot },
 ];
 
 export default function PersonaSelector({ persona, onChange }: PersonaSelectorProps) {
