@@ -64,6 +64,11 @@ export default function Home() {
     setMessages([]);
   }, [setMessages]);
 
+  const handlePersonaChange = useCallback((newPersona: PersonaType) => {
+    setPersona(newPersona);
+    handleNewChat();
+  }, [handleNewChat]);
+
   const handleSelectChat = useCallback(
     async (id: string) => {
       setActiveChatId(id);
@@ -113,7 +118,7 @@ export default function Home() {
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
         persona={persona}
-        onChangePersona={setPersona}
+        onChangePersona={handlePersonaChange}
       />
 
       <div className="flex flex-col flex-1 min-w-0 bg-[var(--background)]">
