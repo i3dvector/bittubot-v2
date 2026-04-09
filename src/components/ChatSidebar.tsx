@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, MessageSquare, MessageSquarePlus } from 'lucide-react';
+import { ChevronLeft, ChevronUp, MessageSquare, MessageSquarePlus } from 'lucide-react';
 import type { Chat } from '@/lib/types';
+import type { PersonaType } from './PersonaSelector';
+import { PERSONA_TILES } from '@/lib/personas';
 
 interface ChatSidebarProps {
   chats: Chat[];
@@ -11,12 +14,9 @@ interface ChatSidebarProps {
   onToggle: () => void;
   onNewChat: () => void;
   onSelectChat: (id: string) => void;
-  persona: import('./PersonaSelector').PersonaType;
-  onChangePersona: (persona: import('./PersonaSelector').PersonaType) => void;
+  persona: PersonaType;
+  onChangePersona: (persona: PersonaType) => void;
 }
-
-import PersonaSelector from './PersonaSelector';
-import { Settings } from 'lucide-react';
 
 export default function ChatSidebar({
   chats,
@@ -28,6 +28,16 @@ export default function ChatSidebar({
   persona,
   onChangePersona,
 }: ChatSidebarProps) {
+  const [switcherOpen, setSwitcherOpen] = useState(false);
+
+  const activeTile = PERSONA_TILES.find((t) => t.id === persona) ?? PERSONA_TILES[0];
+  const ActiveIcon = activeTile.icon;
+
+  const handlePersonaSelect = (id: PersonaType) => {
+    onChangePersona(id);
+    setSwitcherOpen(false);
+  };
+
   return (
     <AnimatePresence initial={false}>
       {isOpen && (
@@ -84,7 +94,11 @@ export default function ChatSidebar({
             className="flex-1 overflow-y-auto px-3 pb-3"
           >
             {chats.length === 0 ? (
-              <p className="text-xs text-zinc-600 text-center py-6" aria-live="polite">
+              <p
+                className="text-xs text-center py-6"
+                style={{ color: 'var(--foreground)', opacity: 0.35 }}
+                aria-live="polite"
+              >
                 No chats yet
               </p>
             ) : (
@@ -116,18 +130,132 @@ export default function ChatSidebar({
             )}
           </nav>
 
-          {/* Bottom actions: Persona and Settings */}
-          <div className="shrink-0 p-3 bg-[var(--sidebar-bg)] border-t border-black/10 dark:border-white/5">
-            <div className="flex flex-col gap-1">
-              <PersonaSelector persona={persona} onChange={onChangePersona} />
-              <button
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[0.9375rem] font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-all outline-none"
-                aria-label="Settings"
+          {/* Persona switcher — bottom panel */}
+          <div
+            className="shrink-0 border-t"
+            style={{ borderTopColor: 'color-mix(in srgb, var(--foreground) 8%, transparent)' }}
+          >
+            {/* Tile picker — slides up from within sidebar */}
+            <AnimatePresence>
+              {switcherOpen && (
+                <motion.div
+                  key="persona-tiles"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-3 flex flex-col gap-2">
+                    {PERSONA_TILES.map((tile, i) => {
+                      const Icon = tile.icon;
+                      const isActive = persona === tile.id;
+                      return (
+                        <motion.button
+                          key={tile.id}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.06, duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                          onClick={() => handlePersonaSelect(tile.id)}
+                          className="w-full cursor-pointer text-left p-4 rounded-[1rem] border transition-shadow duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-action)]"
+                          style={{
+                            backgroundColor: isActive ? tile.accentBg : 'var(--background)',
+                            borderColor: isActive
+                              ? tile.accentBorder
+                              : 'color-mix(in srgb, var(--foreground) 10%, transparent)',
+                            boxShadow: isActive ? `0 4px 16px ${tile.accentBg}` : 'none',
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.backgroundColor = tile.accentBg;
+                              e.currentTarget.style.borderColor = tile.accentBorder;
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.backgroundColor = 'var(--background)';
+                              e.currentTarget.style.borderColor =
+                                'color-mix(in srgb, var(--foreground) 10%, transparent)';
+                            }
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                              style={{
+                                backgroundColor: tile.accentBg,
+                                border: `1px solid ${tile.accentBorder}`,
+                              }}
+                            >
+                              <Icon size={14} style={{ color: tile.accentBorder }} />
+                            </div>
+                            <div>
+                              <div
+                                className="text-[0.875rem] font-semibold leading-tight"
+                                style={{ color: 'var(--foreground)' }}
+                              >
+                                {tile.name}
+                              </div>
+                              <div
+                                className="text-[0.75rem] leading-snug mt-0.5"
+                                style={{ color: 'var(--foreground)', opacity: 0.45 }}
+                              >
+                                {tile.description}
+                              </div>
+                            </div>
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Current persona button — always visible */}
+            <button
+              onClick={() => setSwitcherOpen((prev) => !prev)}
+              aria-label={`Current persona: ${activeTile.name}. Click to switch.`}
+              aria-expanded={switcherOpen}
+              className="w-full flex items-center gap-3 px-4 py-3.5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-action)]"
+              style={{ color: 'var(--foreground)' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--foreground) 5%, transparent)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              <div
+                className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                style={{
+                  backgroundColor: activeTile.accentBg,
+                  border: `1px solid ${activeTile.accentBorder}`,
+                }}
               >
-                <Settings size={16} />
-                <span>Settings</span>
-              </button>
-            </div>
+                <ActiveIcon size={15} style={{ color: activeTile.accentBorder }} />
+              </div>
+              <div className="flex-1 text-left min-w-0">
+                <div
+                  className="text-[0.875rem] font-medium truncate"
+                  style={{ color: 'var(--foreground)' }}
+                >
+                  {activeTile.name}
+                </div>
+                <div
+                  className="text-[0.7rem] truncate"
+                  style={{ color: 'var(--foreground)', opacity: 0.4 }}
+                >
+                  Active persona
+                </div>
+              </div>
+              <ChevronUp
+                size={14}
+                className={`shrink-0 transition-transform duration-200 ${switcherOpen ? '' : 'rotate-180'}`}
+                style={{ color: 'var(--foreground)', opacity: 0.4 }}
+                aria-hidden="true"
+              />
+            </button>
           </div>
         </motion.aside>
       )}

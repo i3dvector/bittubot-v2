@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useRef, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { ArrowUp, Square } from 'lucide-react';
+import type { PersonaType } from './PersonaSelector';
+import { pickPlaceholder } from '@/lib/personas';
 
 interface ChatInputProps {
   value: string;
@@ -10,6 +12,7 @@ interface ChatInputProps {
   onStop?: () => void;
   isLoading?: boolean;
   isHero?: boolean;
+  persona?: PersonaType;
 }
 
 export default function ChatInput({
@@ -19,8 +22,15 @@ export default function ChatInput({
   onStop,
   isLoading = false,
   isHero = false,
+  persona = 'vector',
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Pick a fresh placeholder whenever the persona changes
+  const [placeholder, setPlaceholder] = useState(() => pickPlaceholder(persona));
+  useEffect(() => {
+    setPlaceholder(pickPlaceholder(persona));
+  }, [persona]);
 
   // Auto-resize textarea to fit content
   useEffect(() => {
@@ -70,7 +80,7 @@ export default function ChatInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Message Bittubot…"
+          placeholder={placeholder}
           aria-label="Type your message"
           aria-describedby="chat-input-hint"
           aria-multiline="true"
@@ -78,7 +88,8 @@ export default function ChatInput({
           autoComplete="off"
           spellCheck
           rows={1}
-          className={`flex-1 w-full bg-transparent text-[var(--foreground)] placeholder:-[var(--foreground)]/50 resize-none outline-none leading-[1.6] max-h-48 overflow-y-auto ${isHero ? 'text-[1rem] min-h-[52px]' : 'text-[0.9375rem] min-h-[44px]'}`}
+          className={`flex-1 w-full bg-transparent text-[var(--foreground)] placeholder:opacity-40 resize-none outline-none leading-[1.6] max-h-48 overflow-y-auto ${isHero ? 'text-[1rem] min-h-[52px]' : 'text-[0.9375rem] min-h-[44px]'}`}
+          style={{ color: 'var(--foreground)' }}
         />
 
         {isLoading && onStop ? (

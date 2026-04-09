@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
-import { Bot, PanelLeftOpen, Sparkles } from 'lucide-react';
+import { PanelLeftOpen } from 'lucide-react';
 import ChatSidebar from '@/components/ChatSidebar';
 import ChatInput from '@/components/ChatInput';
 import MessageBubble from '@/components/MessageBubble';
@@ -15,29 +15,7 @@ import {
 } from '@/lib/actions';
 import type { Chat } from '@/lib/types';
 import type { PersonaType } from '@/components/PersonaSelector';
-
-// ── Persona tile definitions ────────────────────────────────────────────────
-
-const PERSONA_TILES = [
-  {
-    id: 'bittusan' as PersonaType,
-    name: 'Bittusan',
-    description:
-      'Warm, highly intelligent, and engaging conversational companion. Uncompromisingly vegan.',
-    icon: Sparkles,
-    accentBg: 'rgba(46, 184, 114, 0.08)',
-    accentBorder: 'rgba(46, 184, 114, 0.3)',
-  },
-  {
-    id: 'vector' as PersonaType,
-    name: 'Vector AI',
-    description:
-      'Sharp, concise, and highly effective assistant. Perfect for rapid coding and problem solving.',
-    icon: Bot,
-    accentBg: 'rgba(217, 119, 87, 0.08)',
-    accentBorder: 'rgba(217, 119, 87, 0.3)',
-  },
-] as const;
+import { PERSONA_TILES } from '@/lib/personas';
 
 // ── Page ────────────────────────────────────────────────────────────────────
 
@@ -354,6 +332,7 @@ export default function Home() {
                       onSubmit={handleSubmit}
                       onStop={stop}
                       isLoading={isLoading}
+                      persona={persona}
                     />
                     <p
                       className="text-center text-[0.75rem] mt-2.5"
@@ -411,6 +390,7 @@ export default function Home() {
                       onStop={stop}
                       isLoading={isLoading}
                       isHero
+                      persona={persona}
                     />
                   </motion.div>
                 </div>

@@ -1,43 +1,118 @@
-# Bittubot V2 Implementation Plan
+# Bittubot V2 — Implementation Plan
 
 ## Goal
-Build a high-performance, ultra-premium consumer-grade AI chat interface (Bittubot V2) to serve as a portfolio project for an AI Engineering role at Anthropic. It will feature real-time streaming, branching conversations, and an accessible, polished UI.
+Build a high-performance, ultra-premium consumer-grade AI chat interface. Features real-time streaming, persistent conversation history, a persona system, and a polished, accessible UI.
 
 ## Technology Stack
 
-* **Frontend:** Next.js 14+ (App Router), React, TypeScript.
-* **Styling & UI:** Tailwind CSS, Radix UI (for accessibility primitives), Framer Motion (for micro-animations), Lucide React (icons).
-* **AI Integration:** Vercel AI SDK (for smooth token streaming and state management).
-* **LLM:** Groq API (Llama 3) for the initial build to utilize existing keys and ensure ultra-fast, free streaming. We will migrate to Anthropic API (Claude 3.5 Sonnet) before final deployment to align with the Anthropic job requirements.
-* **Database:** Neon Serverless Postgres (A perfect drop-in replacement for Supabase's database with a generous free tier). We'll use Drizzle ORM to interact with it.
-* **Hosting:** Vercel (zero-cost, edge-optimized for Next.js).
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Next.js 16 (App Router), React, TypeScript |
+| **Styling** | Tailwind CSS v4, Framer Motion, Lucide React |
+| **AI** | Vercel AI SDK v6 (`ai`, `@ai-sdk/react`, `@ai-sdk/openai`) |
+| **LLM** | Groq API — `llama-3.3-70b-versatile` (fast, free tier) |
+| **Database** | Neon Serverless Postgres + Drizzle ORM |
+| **Hosting** | Vercel |
 
 ## Architecture Overview
 
-### User Experience (The "Wow" Factor)
-1. **Zero-Jank Token Streaming:** Text streams smoothly without stuttering and maintains scroll state.
-2. **Generative UI / Rich Parsing:** Custom markdown components (syntax-highlighted code blocks, beautifully styled tables and quotes).
-3. **Accessibility (a11y) & Keyboard Navigation:** Full keyboard support (e.g., `Cmd+K` or `Ctrl+K` for a command menu, `Up` arrow to edit previous prompt). This directly addresses Anthropic's job requirements.
-4. **Chat Sidebar & History:** Grouped by date (Today, Previous 7 Days, etc.) with the ability to manage threads.
+### Core Data Flow
+1. User selects a persona on the landing screen → sets `persona` state
+2. `ChatInput` sends message via `useChat` (AI SDK v6) with `DefaultChatTransport`
+3. Transport injects `{ chatId, persona }` into every request body
+4. `/api/chat` reads `persona`, picks system prompt, streams via Groq
+5. `onFinish` persists both user + assistant messages to Neon DB
 
-### Data Models
-* **`User`**: Stores user preferences and identity.
-* **`Chat`**: `id`, `title`, `createdAt`, `updatedAt`, `userId`. Contains high-level session data.
-* **`Message`**: `id`, `chatId`, `role` (user, assistant, system), `content`, `createdAt`.
+### Persona System
+Two personas share the same LLM model but receive different system prompts:
+- **Bittusan** — warm, Indian, vegan-forward conversationalist
+- **Vector AI** — sharp, concise, coding-focused assistant
 
-## Proposed Phases
+CSS variables (`--accent-action`, `--accent-action-soft`, `--accent-action-border`) are swapped via `data-theme` attribute on the root div, updating all accent colors globally.
 
-### Phase 1: Foundation
-Initialize the Next.js App Router project. Configure Tailwind, TypeScript, ESLint, and absolute imports.
+---
 
-### Phase 2: Database & Schema
-Provision a free Neon DB instance. Configure Drizzle ORM and run initial migrations for the `Chat` and `Message` tables.
+## Phases
 
-### Phase 3: Premium UI Framework
-Implement the responsive layout wrapper. Build the chat interface (auto-resizing text area, floating submit button, sleek message bubbles, and empty state UI).
+### Phase 1: Foundation ✅
+- Scaffolded Next.js 16 App Router with TypeScript and Tailwind CSS v4
+- Configured absolute imports, ESLint, Geist font
 
-### Phase 4: AI & Streaming Engine
-Integrate the Vercel AI SDK and connect the Anthropic (or Groq) API route handler. Ensure server-sent events (SSE) stream text fluidly to the client.
+### Phase 2: Database & Schema ✅
+- Provisioned Neon Serverless Postgres (Drizzle ORM)
+- Schema: `chats(id, title, createdAt)` + `messages(id, chatId, role, content, createdAt)`
+- `drizzle.config.ts` loads `.env.local` via dotenv (drizzle-kit doesn't auto-load it)
 
-### Phase 5: Polish & "Anthropic-grade" Features
-Integrate `react-markdown`. Add Framer Motion for entering/exiting message animations. Add robust keyboard accessibility. Deploy to Vercel.
+### Phase 3: Premium UI Framework ✅
+- Responsive split layout: collapsible sidebar + main chat area
+- `ChatSidebar` — framer-motion slide, ARIA nav, chat history list
+- `ChatInput` — auto-resizing textarea, glassmorphism styling, focus ring
+- `MessageBubble` — user bubble (right) + assistant prose (full-width)
+
+### Phase 4: AI & Streaming Engine ✅
+- Integrated Vercel AI SDK v6 (`useChat`, `DefaultChatTransport`)
+- `/api/chat` route: `convertToModelMessages` → `streamText` → `toUIMessageStreamResponse`
+- Dynamic body injection via `prepareSendMessagesRequest` + refs (avoids stale closures)
+- DB persistence in `onFinish` callback
+
+### Phase 5: Polish & Accessibility ✅
+- `react-syntax-highlighter` (Prism + vscDarkPlus) with copy button + animated icon swap
+- Framer Motion message entrance: spring (user), ease (assistant)
+- Full ARIA on `ChatInput` (role, aria-busy, aria-describedby) and `ChatSidebar` (nav, aria-current)
+
+### Phase 6: Persona Theming ✅
+- CSS variable token system: `--accent-action`, `--accent-action-soft`, `--accent-action-border`
+- `data-theme` attribute toggles between Default (blue/copper) and Bittusan (emerald) palettes
+- `PersonaSelector` dropdown in sidebar; persona injected into API request body
+- Full `bittusan_persona.md` system prompt for Bittusan; sharp Vector AI prompt
+
+### Phase 7: UI Overhaul ✅
+- Semantic CSS variable theming (light/dark adaptive via `prefers-color-scheme`)
+- `ChatInput` glassmorphism: `bg-[var(--sidebar-bg)] backdrop-blur`, focus glow ring
+- `MessageBubble`: user bubbles (`bg-[var(--bubble-user)]`), assistant prose (full-width)
+- `ChatSidebar`: `bg-[var(--sidebar-bg)]` + theme-aware borders
+- Radial gradient overlay on app background; custom scrollbars; `tracking-tight` globally
+
+### Phase 8: Persona Landing Screen ✅
+- **Selection state** (`!hasSelectedPersona && !activeChatId && !messages`): ChatInput hidden; two persona tiles presented (Bittusan + Vector AI) with brand-colored hover glows
+- `AnimatePresence mode="wait"` transitions cleanly between three states: selection → hero → chat
+- `handleNewChat` resets `hasSelectedPersona` → returns user to selection screen
+- `handleSelectChat` (opening existing chat) sets `hasSelectedPersona(true)` — bypasses selection
+
+### Phase 9: Persona Switcher & Dynamic Placeholders ✅
+- **Sidebar persona switcher**: replaces old dropdown with the same tile UI as the landing screen. A persistent button at the sidebar bottom shows the active persona; clicking it reveals an animated slide-up panel with both persona tiles.
+- **Shared tile definitions**: `src/lib/personas.ts` exports `PERSONA_TILES` and `PERSONA_PLACEHOLDERS` — single source of truth used by both the landing screen and the sidebar switcher.
+- **Dynamic placeholders**: `ChatInput` accepts a `persona` prop. On each persona change a random persona-appropriate placeholder is picked (e.g. *"Kya baat hai? What's on your mind?"* for Bittusan, *"Fire away — I'm fast."* for Vector AI).
+
+---
+
+## Key Technical Notes
+
+### AI SDK v6 Breaking Changes (vs v4/v5)
+- `ai/react` subpath removed → install `@ai-sdk/react` separately
+- `UIMessage.parts[]` replaces `.content` string; use `isTextUIPart` to extract text
+- `useChat` returns `sendMessage` (not `handleSubmit`); no built-in `input` state
+- `convertToModelMessages` is **async** (returns `Promise<ModelMessage[]>`)
+- Body injection: use `prepareSendMessagesRequest` + refs (not state, avoids stale reads)
+
+### File Map
+```
+src/
+├── app/
+│   ├── page.tsx          # Root page: state machine (selection/hero/chat)
+│   ├── layout.tsx        # Geist font, antialiased, tracking-tight
+│   ├── globals.css       # CSS variables, radial gradient, scrollbars
+│   └── api/chat/
+│       └── route.ts      # Streaming endpoint, persona → system prompt
+├── components/
+│   ├── ChatSidebar.tsx   # Collapsible sidebar + persona tile switcher
+│   ├── ChatInput.tsx     # Glassmorphism omnibar, dynamic placeholder
+│   ├── MessageBubble.tsx # Markdown rendering, syntax highlighting
+│   └── PersonaSelector.tsx # (Legacy dropdown — type source for PersonaType)
+└── lib/
+    ├── personas.ts       # PERSONA_TILES, PERSONA_PLACEHOLDERS, pickPlaceholder
+    ├── schema.ts         # Drizzle schema: chats + messages
+    ├── db.ts             # Neon HTTP driver + Drizzle client
+    ├── actions.ts        # Server actions: CRUD for chats/messages
+    └── types.ts          # Chat type
+```
