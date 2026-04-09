@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     persona?: string;
   };
 
-  const systemPrompt = SYSTEM_PROMPTS[persona ?? 'bittusan'] ?? SYSTEM_PROMPTS.bittusan;
+  const systemPrompt = SYSTEM_PROMPTS[persona ?? 'vector'] ?? SYSTEM_PROMPTS.vector;
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({

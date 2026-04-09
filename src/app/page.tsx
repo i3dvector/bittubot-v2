@@ -1,27 +1,53 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
-import { PanelLeftOpen, Sparkles } from 'lucide-react';
+import { Bot, PanelLeftOpen, Sparkles } from 'lucide-react';
 import ChatSidebar from '@/components/ChatSidebar';
 import ChatInput from '@/components/ChatInput';
 import MessageBubble from '@/components/MessageBubble';
-import PersonaSelector, { type PersonaType } from '@/components/PersonaSelector';
 import {
   createChatAction,
   getChatMessagesAction,
   getChatsAction,
 } from '@/lib/actions';
 import type { Chat } from '@/lib/types';
+import type { PersonaType } from '@/components/PersonaSelector';
+
+// ── Persona tile definitions ────────────────────────────────────────────────
+
+const PERSONA_TILES = [
+  {
+    id: 'bittusan' as PersonaType,
+    name: 'Bittusan',
+    description:
+      'Warm, highly intelligent, and engaging conversational companion. Uncompromisingly vegan.',
+    icon: Sparkles,
+    accentBg: 'rgba(46, 184, 114, 0.08)',
+    accentBorder: 'rgba(46, 184, 114, 0.3)',
+  },
+  {
+    id: 'vector' as PersonaType,
+    name: 'Vector AI',
+    description:
+      'Sharp, concise, and highly effective assistant. Perfect for rapid coding and problem solving.',
+    icon: Bot,
+    accentBg: 'rgba(217, 119, 87, 0.08)',
+    accentBorder: 'rgba(217, 119, 87, 0.3)',
+  },
+] as const;
+
+// ── Page ────────────────────────────────────────────────────────────────────
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [chatList, setChatList] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [input, setInput] = useState('');
-  const [persona, setPersona] = useState<PersonaType>('bittusan');
+  const [persona, setPersona] = useState<PersonaType>('vector');
+  const [hasSelectedPersona, setHasSelectedPersona] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Refs so prepareSendMessagesRequest always reads the latest values
@@ -29,8 +55,6 @@ export default function Home() {
   activeChatIdRef.current = activeChatId;
   const personaRef = useRef<PersonaType>(persona);
   personaRef.current = persona;
-
-  const titleSetRef = useRef<Set<string>>(new Set());
 
   const transport = useMemo(
     () =>
@@ -62,16 +86,24 @@ export default function Home() {
   const handleNewChat = useCallback(() => {
     setActiveChatId(null);
     setMessages([]);
+    setHasSelectedPersona(false); // return to selection screen
   }, [setMessages]);
 
+  // Sidebar persona switch — does NOT reset to selection screen
   const handlePersonaChange = useCallback((newPersona: PersonaType) => {
     setPersona(newPersona);
-    handleNewChat();
-  }, [handleNewChat]);
+  }, []);
+
+  // Landing tile click — sets persona AND advances to hero state
+  const handlePersonaSelect = useCallback((id: PersonaType) => {
+    setPersona(id);
+    setHasSelectedPersona(true);
+  }, []);
 
   const handleSelectChat = useCallback(
     async (id: string) => {
       setActiveChatId(id);
+      setHasSelectedPersona(true); // existing chat bypasses selection screen
       const rows = await getChatMessagesAction(id);
       const uiMessages: UIMessage[] = rows.map((m) => ({
         id: m.id,
@@ -95,7 +127,6 @@ export default function Home() {
       activeChatIdRef.current = chatId;
       setActiveChatId(chatId);
       setChatList((prev) => [chat as Chat, ...prev]);
-      titleSetRef.current.add(chatId);
     }
 
     const text = input;
@@ -107,11 +138,23 @@ export default function Home() {
 
   const isLoading = status === 'submitted' || status === 'streaming';
   const hasMessages = messages.length > 0;
+  const isSelectionPhase = !hasSelectedPersona && !activeChatId && !hasMessages;
+
+  const headerTitle = activeChatId
+    ? (chatList.find((c) => c.id === activeChatId)?.title ?? 'Chat')
+    : isSelectionPhase
+    ? 'Bittubot'
+    : persona === 'bittusan'
+    ? 'Bittusan'
+    : 'Vector AI';
 
   return (
-    <div data-theme={persona} className="flex h-screen bg-transparent text-zinc-100 overflow-hidden relative selection:bg-[var(--accent-action-soft)] selection:text-[var(--accent-action)]">
-      
-      {/* Mobile Sidebar Backdrop */}
+    <div
+      data-theme={persona}
+      className="flex h-screen overflow-hidden"
+      style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
+    >
+      {/* Mobile sidebar backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
@@ -135,105 +178,247 @@ export default function Home() {
         onChangePersona={handlePersonaChange}
       />
 
-      <div className="flex flex-col flex-1 min-w-0 bg-[var(--background)]">
+      <div
+        className="flex flex-col flex-1 min-w-0"
+        style={{ backgroundColor: 'var(--background)' }}
+      >
         {/* Top bar */}
-        <header className="flex items-center gap-3 px-4 py-3 shrink-0">
+        <header
+          className="flex items-center gap-3 px-4 py-3 shrink-0 border-b"
+          style={{ borderBottomColor: 'color-mix(in srgb, var(--foreground) 8%, transparent)' }}
+        >
           {!sidebarOpen && (
             <button
               onClick={() => setSidebarOpen(true)}
               aria-label="Open sidebar"
-              className="p-1.5 -ml-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+              className="p-1.5 -ml-1.5 rounded-lg opacity-40 hover:opacity-80 transition-opacity focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+              style={{ color: 'var(--foreground)' }}
             >
               <PanelLeftOpen size={18} />
             </button>
           )}
 
-          <span className="text-[0.9375rem] font-medium text-zinc-800 dark:text-zinc-300">
-            {activeChatId
-              ? (chatList.find((c) => c.id === activeChatId)?.title ?? 'Chat')
-              : 'Bittubot'}
+          <span
+            className="text-[0.9375rem] font-medium truncate"
+            style={{ color: 'var(--foreground)', opacity: 0.65 }}
+          >
+            {headerTitle}
           </span>
         </header>
 
-        {/* Content — vertically centered splash OR scrollable chat */}
-        <motion.div
-          layout
-          className={`flex-1 flex flex-col min-h-0 ${
-            hasMessages ? 'justify-between' : 'justify-center items-center'
-          }`}
-        >
-          {hasMessages ? (
-            /* Chat messages */
-            <div className="flex-1 overflow-y-auto">
-              <div className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 md:py-8">
-                <div className="space-y-6 md:space-y-8 pb-2">
-                  {messages.map((msg) => (
-                    <MessageBubble key={msg.id} message={msg} />
-                  ))}
+        {/* Main content — state machine via AnimatePresence */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <AnimatePresence mode="wait">
 
-                  {status === 'submitted' && (
-                    <div className="flex justify-start">
-                      <div className="flex items-center gap-1.5 px-4 py-3">
-                        {[0, 1, 2].map((i) => (
-                          <span
-                            key={i}
-                            className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-bounce"
-                            style={{ animationDelay: `${i * 0.15}s` }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div ref={messagesEndRef} />
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* Centered splash greeting */
-            <motion.div
-              initial={{ opacity: 0, y: 16, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-              className="flex flex-col items-center justify-center gap-6 text-center px-4 pb-12 w-full"
-            >
-              <div
-                className="w-14 h-14 rounded-[1rem] flex items-center justify-center shadow-sm"
-                style={{
-                  background: 'var(--accent-action-soft)',
-                  border: '1px solid var(--accent-action-border)',
-                }}
+            {isSelectionPhase ? (
+              // ── Persona Selection Landing ─────────────────────────────────
+              <motion.div
+                key="selection"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16, scale: 0.97 }}
+                transition={{ duration: 0.38, ease: [0.23, 1, 0.32, 1] }}
+                className="flex-1 flex flex-col items-center justify-center px-6 pb-16"
               >
-                <Sparkles size={24} style={{ color: 'var(--accent-action)' }} />
-              </div>
-              <div className="space-y-2">
-                <h2 className="text-[1.75rem] font-medium text-[var(--foreground)] tracking-tight">
-                  How can I help you today?
-                </h2>
-                <p className="text-[0.9375rem] text-[var(--foreground)] opacity-70 max-w-sm mx-auto leading-relaxed">
-                  Ask me anything — write code, brainstorm ideas, or just have a conversation.
-                </p>
-              </div>
-            </motion.div>
-          )}
+                <div className="w-full max-w-xl">
+                  {/* Heading */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.08, duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+                    className="text-center mb-10"
+                  >
+                    <h1
+                      className="text-[1.75rem] font-medium tracking-tight mb-2"
+                      style={{ color: 'var(--foreground)' }}
+                    >
+                      Who would you like to speak with?
+                    </h1>
+                    <p
+                      className="text-[0.9375rem] leading-relaxed"
+                      style={{ color: 'var(--foreground)', opacity: 0.42 }}
+                    >
+                      Choose your companion to get started
+                    </p>
+                  </motion.div>
 
-          {/* Input — always at the bottom */}
-          <div className="shrink-0 px-4 pt-2 pb-6 w-full relative z-10 flex flex-col items-center">
-            <div className={`w-full max-w-3xl transition-all duration-500 ${hasMessages ? '' : 'absolute bottom-1/2 translate-y-16'}`}>
-              <ChatInput
-                value={input}
-                onChange={setInput}
-                onSubmit={handleSubmit}
-                onStop={stop}
-                isLoading={isLoading}
-                isHero={!hasMessages}
-              />
-              <p className={`text-center text-[0.75rem] text-[var(--foreground)] opacity-60 mt-3 transition-opacity duration-300 ${hasMessages ? 'opacity-100' : 'opacity-0 hidden'}`}>
-                Bittubot can make mistakes. Verify important information.
-              </p>
-            </div>
-          </div>
-        </motion.div>
+                  {/* Tiles grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {PERSONA_TILES.map((tile, i) => {
+                      const Icon = tile.icon;
+                      return (
+                        <motion.button
+                          key={tile.id}
+                          initial={{ opacity: 0, y: 24 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            delay: 0.16 + i * 0.09,
+                            duration: 0.4,
+                            ease: [0.23, 1, 0.32, 1],
+                          }}
+                          whileHover={{ scale: 1.02, y: -3 }}
+                          whileTap={{ scale: 0.97 }}
+                          onClick={() => handlePersonaSelect(tile.id)}
+                          className="cursor-pointer text-left p-6 rounded-[1.25rem] border transition-shadow duration-300 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-action)]"
+                          style={{
+                            backgroundColor: 'var(--sidebar-bg)',
+                            borderColor: 'color-mix(in srgb, var(--foreground) 10%, transparent)',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = tile.accentBg;
+                            e.currentTarget.style.borderColor = tile.accentBorder;
+                            e.currentTarget.style.boxShadow = `0 8px 32px ${tile.accentBg}, 0 2px 8px rgba(0,0,0,0.06)`;
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--sidebar-bg)';
+                            e.currentTarget.style.borderColor =
+                              'color-mix(in srgb, var(--foreground) 10%, transparent)';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }}
+                        >
+                          {/* Icon badge */}
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+                            style={{
+                              backgroundColor: tile.accentBg,
+                              border: `1px solid ${tile.accentBorder}`,
+                            }}
+                          >
+                            <Icon size={20} style={{ color: tile.accentBorder }} />
+                          </div>
+
+                          <div
+                            className="text-[1rem] font-semibold mb-1.5 tracking-tight"
+                            style={{ color: 'var(--foreground)' }}
+                          >
+                            {tile.name}
+                          </div>
+                          <div
+                            className="text-[0.875rem] leading-relaxed"
+                            style={{ color: 'var(--foreground)', opacity: 0.5 }}
+                          >
+                            {tile.description}
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+
+            ) : hasMessages ? (
+              // ── Active Chat Screen ──────────────────────────────────────────
+              <motion.div
+                key="chat"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.25 }}
+                className="flex-1 flex flex-col min-h-0"
+              >
+                <div className="flex-1 overflow-y-auto">
+                  <div className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 md:py-8">
+                    <div className="space-y-6 md:space-y-8 pb-2">
+                      {messages.map((msg) => (
+                        <MessageBubble key={msg.id} message={msg} />
+                      ))}
+
+                      {status === 'submitted' && (
+                        <div className="flex justify-start">
+                          <div className="flex items-center gap-1.5 px-4 py-3">
+                            {[0, 1, 2].map((i) => (
+                              <span
+                                key={i}
+                                className="w-1.5 h-1.5 rounded-full animate-bounce"
+                                style={{
+                                  backgroundColor: 'var(--accent-action)',
+                                  opacity: 0.6,
+                                  animationDelay: `${i * 0.15}s`,
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div ref={messagesEndRef} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating input above bottom */}
+                <div className="shrink-0 px-4 pb-8 pt-3">
+                  <div className="max-w-3xl mx-auto">
+                    <ChatInput
+                      value={input}
+                      onChange={setInput}
+                      onSubmit={handleSubmit}
+                      onStop={stop}
+                      isLoading={isLoading}
+                    />
+                    <p
+                      className="text-center text-[0.75rem] mt-2.5"
+                      style={{ color: 'var(--foreground)', opacity: 0.3 }}
+                    >
+                      {persona === 'bittusan' ? 'Bittusan' : 'Vector AI'} can make mistakes. Verify important information.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+            ) : (
+              // ── Hero Screen (persona chosen, no messages yet) ───────────────
+              <motion.div
+                key="hero"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+                className="flex-1 flex flex-col items-center justify-center px-4 pb-10"
+              >
+                <div className="w-full max-w-2xl flex flex-col items-center gap-8">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.06, duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+                    className="text-center space-y-2"
+                  >
+                    <h2
+                      className="text-[1.75rem] font-medium tracking-tight"
+                      style={{ color: 'var(--foreground)' }}
+                    >
+                      How can I help you today?
+                    </h2>
+                    <p
+                      className="text-[0.9375rem] max-w-sm leading-relaxed"
+                      style={{ color: 'var(--foreground)', opacity: 0.45 }}
+                    >
+                      {persona === 'bittusan'
+                        ? 'Chatting with Bittusan — your warm, vegan-powered companion.'
+                        : 'Chatting with Vector AI — sharp, precise, built for speed.'}
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.13, duration: 0.38, ease: [0.23, 1, 0.32, 1] }}
+                    className="w-full"
+                  >
+                    <ChatInput
+                      value={input}
+                      onChange={setInput}
+                      onSubmit={handleSubmit}
+                      onStop={stop}
+                      isLoading={isLoading}
+                      isHero
+                    />
+                  </motion.div>
+                </div>
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

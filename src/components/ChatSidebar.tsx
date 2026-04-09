@@ -40,8 +40,15 @@ export default function ChatSidebar({
           className="absolute md:relative flex flex-col h-full bg-[var(--sidebar-bg)] border-r border-black/10 dark:border-white/5 overflow-hidden shrink-0 z-50 shadow-2xl md:shadow-none"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 shrink-0">
-            <span className="text-sm font-semibold text-zinc-100" aria-hidden="true">
+          <div
+            className="flex items-center justify-between px-4 py-3 border-b shrink-0"
+            style={{ borderBottomColor: 'color-mix(in srgb, var(--foreground) 8%, transparent)' }}
+          >
+            <span
+              className="text-sm font-semibold"
+              aria-hidden="true"
+              style={{ color: 'var(--foreground)', opacity: 0.7 }}
+            >
               Bittubot
             </span>
             <button
@@ -49,7 +56,8 @@ export default function ChatSidebar({
               aria-label="Collapse sidebar"
               aria-expanded={isOpen}
               aria-controls="chat-history-list"
-              className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+              className="p-1.5 rounded-lg opacity-40 hover:opacity-80 transition-opacity focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] outline-none"
+              style={{ color: 'var(--foreground)' }}
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </button>
