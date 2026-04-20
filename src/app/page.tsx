@@ -28,6 +28,11 @@ export default function Home() {
   const [hasSelectedPersona, setHasSelectedPersona] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Apply persona theme to <html> so CSS vars cascade to body/background
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', persona);
+  }, [persona]);
+
   // Refs so prepareSendMessagesRequest always reads the latest values
   const activeChatIdRef = useRef<string | null>(null);
   activeChatIdRef.current = activeChatId;
@@ -118,6 +123,8 @@ export default function Home() {
   const hasMessages = messages.length > 0;
   const isSelectionPhase = !hasSelectedPersona && !activeChatId && !hasMessages;
 
+  const activeTile = PERSONA_TILES.find((t) => t.id === persona) ?? PERSONA_TILES[0];
+
   const headerTitle = activeChatId
     ? (chatList.find((c) => c.id === activeChatId)?.title ?? 'Chat')
     : isSelectionPhase
@@ -128,7 +135,6 @@ export default function Home() {
 
   return (
     <div
-      data-theme={persona}
       className="flex h-screen overflow-hidden"
       style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
     >
@@ -309,7 +315,7 @@ export default function Home() {
                   <div className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 md:py-8">
                     <div className="space-y-6 md:space-y-8 pb-2">
                       {messages.map((msg) => (
-                        <MessageBubble key={msg.id} message={msg} />
+                        <MessageBubble key={msg.id} message={msg} personaName={activeTile.name} />
                       ))}
 
                       {status === 'submitted' && (

@@ -182,9 +182,10 @@ const easeTransition = { duration: 0.32, ease: [0.25, 0.46, 0.45, 0.94] as const
 
 interface MessageBubbleProps {
   message: UIMessage;
+  personaName?: string;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+export default function MessageBubble({ message, personaName = 'Assistant' }: MessageBubbleProps) {
   const isUser = message.role === 'user';
   const textContent = message.parts.filter(isTextUIPart).map((p) => p.text).join('');
 
@@ -225,7 +226,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
             className="mt-2 text-[10px] uppercase tracking-widest"
             style={{ color: 'var(--accent-action)', opacity: 0.6 }}
           >
-            Bittubot
+            {personaName}
           </div>
         </div>
       )}
