@@ -13,15 +13,17 @@ export const PERSONA_TILES = [
     icon: Sparkles,
     accentBg: 'rgba(46, 184, 114, 0.08)',
     accentBorder: 'rgba(46, 184, 114, 0.3)',
+    portrait: '/images/bittusan.png',
   },
   {
     id: 'vector' as PersonaType,
-    name: 'Vector AI',
+    name: 'Vector',
     description:
       'Sharp, concise, and highly effective assistant. Perfect for rapid coding and problem solving.',
     icon: Bot,
-    accentBg: 'rgba(217, 119, 87, 0.08)',
-    accentBorder: 'rgba(217, 119, 87, 0.3)',
+    accentBg: 'rgba(237, 135, 102, 0.08)',
+    accentBorder: 'rgba(237, 135, 102, 0.3)',
+    portrait: '/images/vector.jpg',
   },
 ] as const;
 

@@ -1,43 +1,59 @@
 @import "tailwindcss";
 
-/* ── Persona theming ─────────────────────────────────────────────────── */
-:root {
-  --background: #fdfdfc; /* Clean off-white Claude style */
-  --foreground: #1c1c1c;
-  --accent-action: #d97757; /* Claude-like orange/copper accent */
-  --accent-action-soft: rgba(217, 119, 87, 0.12);
-  --accent-action-border: rgba(217, 119, 87, 0.22);
-  --sidebar-bg: #f5f4ef; /* Warm light gray sidebar */
-  --bubble-user: #f0eee2;
+/* ── MD3 Token Palette ───────────────────────────────────────────────── */
+
+/* Vector persona (default) — orange/amber */
+:root,
+[data-theme='vector'] {
+  --background:               #111413;
+  --foreground:               #e1e3e1;
+  --sidebar-bg:               rgba(17, 20, 19, 0.92);
+  --surface-container:        #1d201f;
+  --surface-container-low:    #191c1b;
+  --surface-container-high:   #282b29;
+  --surface-container-highest:#323534;
+  --outline-variant:          #3d4a40;
+
+  /* Accent — orange/amber (Vector) */
+  --accent-action:            #ed8766;
+  --accent-action-soft:       rgba(237, 135, 102, 0.10);
+  --accent-action-border:     rgba(237, 135, 102, 0.30);
+  --accent-dim:               #ffb59e;
+
+  /* Persona wash gradient */
+  --persona-wash:             linear-gradient(180deg, rgba(237, 135, 102, 0.05) 0%, rgba(17, 20, 19, 0) 100%);
+
+  --bubble-user:              #1d201f;
 }
 
+/* Bittusan persona — emerald/green */
 [data-theme='bittusan'] {
-  --background: #111a14; /* Deep organic forest green */
-  --foreground: #e6edd9; /* Soft pale green/white text */
-  --accent-action: #2eb872; /* Vibrant leaf green */
-  --accent-action-soft: rgba(46, 184, 114, 0.12);
-  --accent-action-border: rgba(46, 184, 114, 0.22);
-  --sidebar-bg: #0d140f; /* Even darker green sidebar */
-  --bubble-user: #1a2920; 
-}
+  --background:               #111413;
+  --foreground:               #e1e3e1;
+  --sidebar-bg:               rgba(17, 20, 19, 0.92);
+  --surface-container:        #1d201f;
+  --surface-container-low:    #191c1b;
+  --surface-container-high:   #282b29;
+  --surface-container-highest:#323534;
+  --outline-variant:          #3d4a40;
 
-/* Add a dark mode default for users preferring dark overall */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1e1e1e; /* Claude dark mode */
-    --foreground: #e5e5e5;
-    --accent-action: #d97757;
-    --accent-action-soft: rgba(217, 119, 87, 0.15);
-    --accent-action-border: rgba(217, 119, 87, 0.3);
-    --sidebar-bg: #252525;
-    --bubble-user: #2c2d2c;
-  }
+  /* Accent — emerald (Bittusan) */
+  --accent-action:            #5cde94;
+  --accent-action-soft:       rgba(92, 222, 148, 0.10);
+  --accent-action-border:     rgba(92, 222, 148, 0.30);
+  --accent-dim:               #2eb872;
+
+  /* Persona wash gradient */
+  --persona-wash:             linear-gradient(180deg, rgba(92, 222, 148, 0.05) 0%, rgba(17, 20, 19, 0) 100%);
+
+  --bubble-user:              #1d201f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-headline: var(--font-manrope);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -49,34 +65,18 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.4s ease, color 0.4s ease;
   letter-spacing: -0.01em;
 }
 
-/* ── Radial gradient overlay ─────────────────────────────────────────── */
-.bg-app {
-  background-color: #09090b;
-  background-image: radial-gradient(
-    ellipse 80% 80% at 50% -20%,
-    rgba(120, 119, 198, 0.15),
-    rgba(255, 255, 255, 0)
-  );
-}
+/* ── Scrollbar ───────────────────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Custom scrollbar ────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #3f3f46; /* zinc-700 */
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #52525b; /* zinc-600 */
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #52525b; }

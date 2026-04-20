@@ -167,8 +167,8 @@ const markdownComponents: Components = {
 // ─── Animation variants ───────────────────────────────────────────────────────
 
 const userVariants = {
-  initial: { opacity: 0, x: 16, scale: 0.97 },
-  animate: { opacity: 1, x: 0, scale: 1 },
+  initial: { opacity: 0, x: 16 },
+  animate: { opacity: 1, x: 0 },
 };
 
 const assistantVariants = {
@@ -176,7 +176,6 @@ const assistantVariants = {
   animate: { opacity: 1, y: 0 },
 };
 
-const springTransition = { type: 'spring' as const, stiffness: 420, damping: 32 };
 const easeTransition = { duration: 0.32, ease: [0.25, 0.46, 0.45, 0.94] as const };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -194,20 +193,40 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
       variants={isUser ? userVariants : assistantVariants}
       initial="initial"
       animate="animate"
-      transition={isUser ? springTransition : easeTransition}
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
+      transition={easeTransition}
+      className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
       role="article"
       aria-label={`${isUser ? 'Your message' : 'Bittubot response'}`}
     >
       {isUser ? (
-        <div className="max-w-[92%] md:max-w-[80%] px-[1.25rem] py-3 rounded-[1.25rem] bg-[var(--bubble-user)] text-[var(--foreground)] text-[0.9375rem] leading-[1.6] whitespace-pre-wrap">
-          {textContent}
-        </div>
+        <>
+          <div
+            className="max-w-[80%] text-[17px] leading-relaxed text-right font-light"
+            style={{ color: 'var(--foreground)' }}
+          >
+            {textContent}
+          </div>
+          <div
+            className="mt-1.5 text-[10px] uppercase tracking-widest"
+            style={{ color: 'var(--foreground)', opacity: 0.28 }}
+          >
+            You
+          </div>
+        </>
       ) : (
-        <div className="w-full text-base">
+        <div
+          className="w-full pl-4 border-l-2 text-base"
+          style={{ borderLeftColor: 'var(--accent-action)', opacity: 0.95 }}
+        >
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
             {textContent}
           </ReactMarkdown>
+          <div
+            className="mt-2 text-[10px] uppercase tracking-widest"
+            style={{ color: 'var(--accent-action)', opacity: 0.6 }}
+          >
+            Bittubot
+          </div>
         </div>
       )}
     </motion.div>

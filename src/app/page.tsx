@@ -124,7 +124,7 @@ export default function Home() {
     ? 'Bittubot'
     : persona === 'bittusan'
     ? 'Bittusan'
-    : 'Vector AI';
+    : 'Vector';
 
   return (
     <div
@@ -198,17 +198,17 @@ export default function Home() {
                 transition={{ duration: 0.38, ease: [0.23, 1, 0.32, 1] }}
                 className="flex-1 flex flex-col items-center justify-center px-6 pb-16"
               >
-                <div className="w-full max-w-xl">
+                <div className="w-full max-w-2xl">
                   {/* Heading */}
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.08, duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-                    className="text-center mb-10"
+                    className="text-center mb-12"
                   >
                     <h1
-                      className="text-[1.75rem] font-medium tracking-tight mb-2"
-                      style={{ color: 'var(--foreground)' }}
+                      className="text-[2rem] font-black tracking-tight mb-2"
+                      style={{ color: 'var(--foreground)', fontFamily: 'var(--font-manrope)' }}
                     >
                       Who would you like to speak with?
                     </h1>
@@ -216,70 +216,82 @@ export default function Home() {
                       className="text-[0.9375rem] leading-relaxed"
                       style={{ color: 'var(--foreground)', opacity: 0.42 }}
                     >
-                      Choose your companion to get started
+                      Select an intelligence profile to begin your curated digital session.
                     </p>
                   </motion.div>
 
-                  {/* Tiles grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {PERSONA_TILES.map((tile, i) => {
-                      const Icon = tile.icon;
-                      return (
-                        <motion.button
-                          key={tile.id}
-                          initial={{ opacity: 0, y: 24 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            delay: 0.16 + i * 0.09,
-                            duration: 0.4,
-                            ease: [0.23, 1, 0.32, 1],
-                          }}
-                          whileHover={{ scale: 1.02, y: -3 }}
-                          whileTap={{ scale: 0.97 }}
-                          onClick={() => handlePersonaSelect(tile.id)}
-                          className="cursor-pointer text-left p-6 rounded-[1.25rem] border transition-shadow duration-300 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-action)]"
-                          style={{
-                            backgroundColor: 'var(--sidebar-bg)',
-                            borderColor: 'color-mix(in srgb, var(--foreground) 10%, transparent)',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = tile.accentBg;
-                            e.currentTarget.style.borderColor = tile.accentBorder;
-                            e.currentTarget.style.boxShadow = `0 8px 32px ${tile.accentBg}, 0 2px 8px rgba(0,0,0,0.06)`;
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'var(--sidebar-bg)';
-                            e.currentTarget.style.borderColor =
-                              'color-mix(in srgb, var(--foreground) 10%, transparent)';
-                            e.currentTarget.style.boxShadow = 'none';
-                          }}
-                        >
-                          {/* Icon badge */}
+                  {/* Portrait cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    {PERSONA_TILES.map((tile, i) => (
+                      <motion.button
+                        key={tile.id}
+                        initial={{ opacity: 0, y: 24 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.16 + i * 0.09,
+                          duration: 0.4,
+                          ease: [0.23, 1, 0.32, 1],
+                        }}
+                        whileHover={{ scale: 1.02, y: -4 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => handlePersonaSelect(tile.id)}
+                        className="cursor-pointer text-left rounded-2xl overflow-hidden border outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-action)] group relative"
+                        style={{
+                          borderColor: tile.accentBorder,
+                          backgroundColor: 'var(--surface-container)',
+                        }}
+                      >
+                        {/* Portrait image */}
+                        <div className="relative h-64 overflow-hidden">
+                          <img
+                            src={tile.portrait}
+                            alt={`${tile.name} persona portrait`}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          {/* Gradient overlay */}
                           <div
-                            className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+                            className="absolute inset-0"
                             style={{
+                              background: `linear-gradient(to bottom, transparent 40%, var(--surface-container) 100%)`,
+                            }}
+                          />
+                          {/* Principal label */}
+                          <div
+                            className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.15em] font-bold px-2 py-1 rounded"
+                            style={{
+                              color: tile.accentBorder,
                               backgroundColor: tile.accentBg,
                               border: `1px solid ${tile.accentBorder}`,
+                              fontFamily: 'var(--font-manrope)',
                             }}
                           >
-                            <Icon size={20} style={{ color: tile.accentBorder }} />
+                            Principal AI
                           </div>
+                        </div>
 
+                        {/* Card body */}
+                        <div className="p-5">
                           <div
-                            className="text-[1rem] font-semibold mb-1.5 tracking-tight"
-                            style={{ color: 'var(--foreground)' }}
+                            className="text-[1.25rem] font-black tracking-tight mb-1"
+                            style={{ color: 'var(--foreground)', fontFamily: 'var(--font-manrope)' }}
                           >
                             {tile.name}
                           </div>
                           <div
-                            className="text-[0.875rem] leading-relaxed"
+                            className="text-[0.875rem] leading-relaxed mb-4"
                             style={{ color: 'var(--foreground)', opacity: 0.5 }}
                           >
                             {tile.description}
                           </div>
-                        </motion.button>
-                      );
-                    })}
+                          <div
+                            className="text-[0.8125rem] font-bold uppercase tracking-widest flex items-center gap-1.5"
+                            style={{ color: tile.accentBorder, fontFamily: 'var(--font-manrope)' }}
+                          >
+                            Select Identity →
+                          </div>
+                        </div>
+                      </motion.button>
+                    ))}
                   </div>
                 </div>
               </motion.div>
@@ -338,7 +350,7 @@ export default function Home() {
                       className="text-center text-[0.75rem] mt-2.5"
                       style={{ color: 'var(--foreground)', opacity: 0.3 }}
                     >
-                      {persona === 'bittusan' ? 'Bittusan' : 'Vector AI'} can make mistakes. Verify important information.
+                      {persona === 'bittusan' ? 'Bittusan' : 'Vector'} can make mistakes. Verify important information.
                     </p>
                   </div>
                 </div>
@@ -373,7 +385,7 @@ export default function Home() {
                     >
                       {persona === 'bittusan'
                         ? 'Chatting with Bittusan — your warm, vegan-powered companion.'
-                        : 'Chatting with Vector AI — sharp, precise, built for speed.'}
+                        : 'Chatting with Vector — sharp, precise, built for speed.'}
                     </p>
                   </motion.div>
 
