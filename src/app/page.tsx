@@ -63,10 +63,10 @@ export default function Home() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Load chat list on mount
+  // Reload chat list whenever session or persona changes
   useEffect(() => {
-    if (sessionId) getChatsAction(sessionId).then((rows) => setChatList(rows as Chat[]));
-  }, [sessionId]);
+    if (sessionId) getChatsAction(sessionId, persona).then((rows) => setChatList(rows as Chat[]));
+  }, [sessionId, persona]);
 
   const handleNewChat = useCallback(() => {
     setActiveChatId(null);
@@ -74,10 +74,13 @@ export default function Home() {
     setHasSelectedPersona(false); // return to selection screen
   }, [setMessages]);
 
-  // Sidebar persona switch — does NOT reset to selection screen
+  // Sidebar persona switch — resets conversation and loads that persona's chats
   const handlePersonaChange = useCallback((newPersona: PersonaType) => {
     setPersona(newPersona);
-  }, []);
+    setActiveChatId(null);
+    setMessages([]);
+    setHasSelectedPersona(true); // go to hero, not back to selection
+  }, [setMessages]);
 
   // Landing tile click — sets persona AND advances to hero state
   const handlePersonaSelect = useCallback((id: PersonaType) => {
@@ -107,7 +110,7 @@ export default function Home() {
 
     if (!chatId) {
       const title = input.trim().slice(0, 50);
-      const chat = await createChatAction(title, sessionId ?? '');
+      const chat = await createChatAction(title, sessionId ?? '', personaRef.current);
       chatId = chat.id;
       activeChatIdRef.current = chatId;
       setActiveChatId(chatId);
@@ -118,7 +121,7 @@ export default function Home() {
     setInput('');
     await sendMessage({ text });
 
-    if (sessionId) getChatsAction(sessionId).then((rows) => setChatList(rows as Chat[]));
+    if (sessionId) getChatsAction(sessionId, personaRef.current).then((rows) => setChatList(rows as Chat[]));
   }, [input, status, sendMessage]);
 
   const isLoading = status === 'submitted' || status === 'streaming';
