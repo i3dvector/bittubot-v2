@@ -2,6 +2,7 @@ import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const chats = pgTable('chats', {
   id: uuid('id').defaultRandom().primaryKey(),
+  sessionId: text('session_id').notNull(),
   title: text('title').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

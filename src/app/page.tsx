@@ -16,6 +16,7 @@ import {
 import type { Chat } from '@/lib/types';
 import type { PersonaType } from '@/components/PersonaSelector';
 import { PERSONA_TILES } from '@/lib/personas';
+import { useSessionId } from '@/lib/useSessionId';
 
 // ── Page ────────────────────────────────────────────────────────────────────
 
@@ -27,6 +28,7 @@ export default function Home() {
   const [persona, setPersona] = useState<PersonaType>('vector');
   const [hasSelectedPersona, setHasSelectedPersona] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sessionId = useSessionId();
 
   // Apply persona theme to <html> so CSS vars cascade to body/background
   useEffect(() => {
@@ -63,8 +65,8 @@ export default function Home() {
 
   // Load chat list on mount
   useEffect(() => {
-    getChatsAction().then((rows) => setChatList(rows as Chat[]));
-  }, []);
+    if (sessionId) getChatsAction(sessionId).then((rows) => setChatList(rows as Chat[]));
+  }, [sessionId]);
 
   const handleNewChat = useCallback(() => {
     setActiveChatId(null);
@@ -87,7 +89,7 @@ export default function Home() {
     async (id: string) => {
       setActiveChatId(id);
       setHasSelectedPersona(true); // existing chat bypasses selection screen
-      const rows = await getChatMessagesAction(id);
+      const rows = await getChatMessagesAction(id, sessionId ?? '');
       const uiMessages: UIMessage[] = rows.map((m) => ({
         id: m.id,
         role: m.role as 'user' | 'assistant',
@@ -105,7 +107,7 @@ export default function Home() {
 
     if (!chatId) {
       const title = input.trim().slice(0, 50);
-      const chat = await createChatAction(title);
+      const chat = await createChatAction(title, sessionId ?? '');
       chatId = chat.id;
       activeChatIdRef.current = chatId;
       setActiveChatId(chatId);
@@ -116,7 +118,7 @@ export default function Home() {
     setInput('');
     await sendMessage({ text });
 
-    getChatsAction().then((rows) => setChatList(rows as Chat[]));
+    if (sessionId) getChatsAction(sessionId).then((rows) => setChatList(rows as Chat[]));
   }, [input, status, sendMessage]);
 
   const isLoading = status === 'submitted' || status === 'streaming';
