@@ -10,7 +10,7 @@ Build a high-performance, ultra-premium consumer-grade AI chat interface. Featur
 | **Frontend** | Next.js 16 (App Router), React, TypeScript |
 | **Styling** | Tailwind CSS v4, Framer Motion, Lucide React |
 | **AI** | Vercel AI SDK v6 (`ai`, `@ai-sdk/react`, `@ai-sdk/openai`) |
-| **LLM** | Groq API — `llama-3.3-70b-versatile` (fast, free tier) |
+| **LLM** | Groq API — `openai/gpt-oss-120b` (fast, free tier) |
 | **Database** | Neon Serverless Postgres + Drizzle ORM |
 | **Hosting** | Vercel |
 
